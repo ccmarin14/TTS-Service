@@ -1,25 +1,30 @@
 **Servicio de TTS**
+===================
 
-**Descripción** Este proyecto es un backend desarrollado con FastAPI, siguiendo el patrón de diseño Modelo-Vista-Controlador (MVC). Su principal objetivo es proporcionar un servicio de Text-to-Speech (TTS) que permite convertir texto en audio.
+**Descripción**\
+Este proyecto es un backend desarrollado con FastAPI, siguiendo el patrón de diseño Modelo-Vista-Controlador (MVC). Su principal objetivo es proporcionar un servicio de Text-to-Speech (TTS) que permite convertir texto en audio.
 
-**Estructura del Proyecto** /TTS-Service
+**Estructura del Proyecto**\
+`/TTS-Service`
 
 -   **app/**
     -   `__init__.py`
-    -   `main.py`: Archivo principal donde se inicializa FastAPI
-    -   **models/**: Carpeta para modelos de datos
+    -   `main.py`: Archivo principal donde se inicializa FastAPI.
+    -   **models/**: Carpeta para modelos de datos.
         -   `__init__.py`
-        -   `tts_model.py`: Definición de modelos usando Pydantic
-    -   **services/**: Carpeta para la lógica del negocio
+        -   `tts_model.py`: Definición de modelos usando Pydantic.
+    -   **services/**: Carpeta para la lógica del negocio.
         -   `__init__.py`
-        -   `tts_service.py`: Lógica para manejar TTS
-    -   **controllers/**: Carpeta para controladores (rutas)
+        -   `tts_service.py`: Lógica para manejar TTS, incluyendo la configuración de modelos y la síntesis de audio.
+    -   **controllers/**: Carpeta para controladores (rutas).
         -   `__init__.py`
-        -   `tts_controller.py`: Rutas relacionadas con TTS
-    -   **utils/**: Carpeta para utilidades
+        -   `tts_controller.py`: Rutas relacionadas con TTS, donde se gestionan las solicitudes de síntesis de audio.
+    -   **resources/**: Carpeta para almacenar archivos de audio generados.
+        -   `audio.wav`: Archivo de audio sintetizado.
+    -   **utils/**: Carpeta para utilidades.
         -   `__init__.py`
--   `requirements.txt`: Dependencias del proyecto
--   `README.md`: Documentación del proyecto
+-   `requirements.txt`: Dependencias del proyecto.
+-   `README.md`: Documentación del proyecto.
 
 **Instalación**
 
@@ -32,7 +37,8 @@
 pip install -r requirements.txt
 ```
 
-**Ejecutar el Servicio** Para iniciar el servicio, ejecuta el siguiente comando en la terminal desde la raíz del proyecto:
+**Ejecutar el Servicio**\
+Para iniciar el servicio, ejecuta el siguiente comando en la terminal desde la raíz del proyecto:
 
 ```bash
 uvicorn app.main:app --reload
@@ -40,29 +46,34 @@ uvicorn app.main:app --reload
 
 Accede a la aplicación en `http://127.0.0.1:8000`.
 
-**Documentación Automática** FastAPI proporciona documentación automática que puede ser accedida en:
+**Documentación Automática**\
+FastAPI proporciona documentación automática que puede ser accedida en:
 
 -   Swagger UI: `http://127.0.0.1:8000/docs`
 -   ReDoc: `http://127.0.0.1:8000/redoc`
 
-**Uso del Servicio** Para utilizar el servicio de TTS, realiza una solicitud POST a la ruta `/tts/` con el siguiente cuerpo en formato JSON:
+**Uso del Servicio**\
+Para utilizar el servicio de TTS, realiza una solicitud POST a la ruta `/tts/` con el siguiente cuerpo en formato JSON:
 
 ```json
 {
-  "text": "Texto que deseas convertir a audio."
+  "text": "Texto que deseas convertir a audio.",
+  "model": 2
 }
 ```
 
-**Respuesta Exitosa** Si la síntesis de audio es exitosa, recibirás una respuesta como la siguiente:
+**Respuesta Exitosa**\
+Si la síntesis de audio es exitosa, recibirás una respuesta como la siguiente:
 
 ```json
 {
   "message": "Audio synthesized successfully",
-  "audio_path": "output/audio.wav"
+  "audio_path": "app/resources/audio.wav"
 }
 ```
 
-**Errores** Si ocurre un error durante el proceso de síntesis, recibirás un mensaje de error con el código de estado correspondiente.
+**Errores**\
+Si ocurre un error durante el proceso de síntesis, recibirás un mensaje de error con el código de estado correspondiente.
 
 **Mejores Prácticas**
 
