@@ -1,0 +1,12 @@
+{"models": 
+    [
+        {"id":0, "model":"tts_models/en/jenny/jenny", "description": "Optimizado para voces naturales, recomendado para frases cortas. Debilidad: Puede no ser tan versátil"},
+        {"id":1, "model":"tts_models/en/ljspeech/tacotron2-DDC", "description": "Muy buena calidad de voz, bueno para palabras. Debilidad: Requiere más tiempo de entrenamiento"},
+        {"id":2, "model":"tts_models/en/ljspeech/glow-tts", "description": "Eficiente y versátil. Debilidad: Calidad variable dependiendo de los datos"},
+        {"id":3, "model":"tts_models/en/ljspeech/speedy-speech", "description": "Muy rápido en síntesis para textos largos. Debilidad: Puede sacrificar calidad"},
+        {"id":4, "model":"tts_models/en/ljspeech/tacotron2-DCA", "description": "Mejora en prosodia y entonación, bueno para textos largos. Debilidad: Requiere más recursos computacionales"},
+        {"id":5, "model":"tts_models/en/ljspeech/fast_pitch", "description": "Bueno y rápido. Debilidad: Limitado en variaciones de tono"},
+        {"id":20, "model":"tts_models/es/mai/tacotron2-DDC", "description": "Excelente calidad en español. Debilidad: Menor disponibilidad de datos"},
+        {"id":21, "model":"tts_models/es/css10/vits", "description": "Alto rendimiento en español. Debilidad: Puede ser complejo de ajustar"}
+    ]
+}
