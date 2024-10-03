@@ -26,12 +26,36 @@ Este proyecto es un backend desarrollado con FastAPI, siguiendo el patrón de di
 -   `requirements.txt`: Dependencias del proyecto.
 -   `README.md`: Documentación del proyecto.
 
+**Requerimientos**
+- python >= 3.6, < 3.9
+- pip
+- venv de python
+- Apache
+
 **Instalación**
 
-1.  Asegúrate de tener Python y pip instalados.
+1.  Asegúrate de cumplir con los requerimientos.
 2.  Clona el repositorio.
 3.  Accede a la carpeta del proyecto.
-4.  Ejecuta el siguiente comando para instalar las dependencias:
+4.  Genera un espacio virtual.
+
+```bash
+python -m venv tts_service
+#or 
+python3 -m venv tts_service
+```
+
+5. Accede al entorno virtual.
+
+```bash
+#Windows
+tts_service\Scripts\activate
+
+#Linux
+source tts_service/bin/activate
+```
+
+6.  Ejecuta el siguiente comando para instalar las dependencias:
 
 ```bash
 pip install -r requirements.txt
@@ -44,13 +68,13 @@ Para iniciar el servicio, ejecuta el siguiente comando en la terminal desde la r
 uvicorn app.main:app --reload
 ```
 
-Accede a la aplicación en `http://127.0.0.1:8000`.
+Accede a la aplicación en `http://{direccion o nombre}:8000`.
 
 **Documentación Automática**\
 FastAPI proporciona documentación automática que puede ser accedida en:
 
--   Swagger UI: `http://127.0.0.1:8000/docs`
--   ReDoc: `http://127.0.0.1:8000/redoc`
+-   Swagger UI: `http://{direccion o nombre}:8000/docs`
+-   ReDoc: `http://{direccion o nombre}:8000/redoc`
 
 **Uso del Servicio**\
 Para utilizar el servicio de TTS, realiza una solicitud POST a la ruta `/tts/` con el siguiente cuerpo en formato JSON:
