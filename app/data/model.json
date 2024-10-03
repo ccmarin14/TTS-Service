@@ -1,12 +1,161 @@
-{"models": 
-    [
-        {"id":0, "model":"tts_models/en/jenny/jenny", "description": "Optimizado para voces naturales, recomendado para frases cortas. Debilidad: Puede no ser tan versátil"},
-        {"id":1, "model":"tts_models/en/ljspeech/tacotron2-DDC", "description": "Muy buena calidad de voz, bueno para palabras. Debilidad: Requiere más tiempo de entrenamiento"},
-        {"id":2, "model":"tts_models/en/ljspeech/glow-tts", "description": "Eficiente y versátil. Debilidad: Calidad variable dependiendo de los datos"},
-        {"id":3, "model":"tts_models/en/ljspeech/speedy-speech", "description": "Muy rápido en síntesis para textos largos. Debilidad: Puede sacrificar calidad"},
-        {"id":4, "model":"tts_models/en/ljspeech/tacotron2-DCA", "description": "Mejora en prosodia y entonación, bueno para textos largos. Debilidad: Requiere más recursos computacionales"},
-        {"id":5, "model":"tts_models/en/ljspeech/fast_pitch", "description": "Bueno y rápido. Debilidad: Limitado en variaciones de tono"},
-        {"id":20, "model":"tts_models/es/mai/tacotron2-DDC", "description": "Excelente calidad en español. Debilidad: Menor disponibilidad de datos"},
-        {"id":21, "model":"tts_models/es/css10/vits", "description": "Alto rendimiento en español. Debilidad: Puede ser complejo de ajustar"}
+{
+    "models": [
+      {
+        "id": 0,
+        "model": "tts_models/en/jenny/jenny",
+        "idioma": "Inglés",
+        "description": {
+          "fortalezas": [
+            "Voz que suena muy natural y agradable",
+            "Perfecto para conversaciones o diálogos cortos",
+            "Se adapta bien a voces femeninas",
+            "Ideal para usar en frases cortas"
+          ],
+          "debilidades": [
+            "No es tan flexible en textos largos",
+            "Tiene menos variación de tono",
+            "La calidad baja cuando se usan textos muy técnicos",
+            "No es muy bueno con acentos o dialectos específicos"
+          ]
+        }
+      },
+      {
+        "id": 1,
+        "model": "tts_models/en/ljspeech/tacotron2-DDC",
+        "idioma": "Inglés",
+        "description": {
+          "fortalezas": [
+            "Voz de muy buena calidad",
+            "Maneja bien palabras difíciles",
+            "Tonos muy precisos",
+            "Estable en frases cortas y medianas",
+            "Funciona con diferentes estilos de habla"
+          ],
+          "debilidades": [
+            "Requiere más tiempo para responder",
+            "Necesita más potencia de la computadora",
+            "Pierde naturalidad en textos largos",
+            "A veces pierde coherencia en textos largos"
+          ]
+        }
+      },
+      {
+        "id": 2,
+        "model": "tts_models/en/ljspeech/glow-tts",
+        "idioma": "Inglés",
+        "description": {
+          "fortalezas": [
+            "Genera voz de forma rápida y eficiente",
+            "Funciona bien con diferentes tipos de texto",
+            "Es rápido al crear audio",
+            "Buena calidad en frases cortas o medianas"
+          ],
+          "debilidades": [
+            "La calidad varía según los datos usados",
+            "No es tan natural en textos largos",
+            "Menos expresivo que otros modelos",
+            "No es tan bueno con nombres complicados"
+          ]
+        }
+      },
+      {
+        "id": 3,
+        "model": "tts_models/en/ljspeech/speedy-speech",
+        "idioma": "Inglés",
+        "description": {
+          "fortalezas": [
+            "Extremadamente rápido para crear voz",
+            "Ideal para textos largos",
+            "Fluidez en la lectura",
+            "No necesita mucha potencia de la computadora",
+            "Perfecto para uso en tiempo real"
+          ],
+          "debilidades": [
+            "Pierde calidad por ser tan rápido",
+            "No es tan bueno para frases complicadas",
+            "Voz menos expresiva",
+            "Reducción en la calidad del tono",
+            "No es la mejor opción para textos cortos"
+          ]
+        }
+      },
+      {
+        "id": 4,
+        "model": "tts_models/en/ljspeech/tacotron2-DCA",
+        "idioma": "Inglés",
+        "description": {
+          "fortalezas": [
+            "Muy buen control de la entonación",
+            "Perfecto para textos largos y difíciles",
+            "Control preciso de las variaciones de tono",
+            "Genera voces coherentes y exactas",
+            "Calidad mejorada en frases largas"
+          ],
+          "debilidades": [
+            "Consume más recursos de la computadora",
+            "Más lento en generar voz",
+            "No funciona tan bien en frases cortas"
+          ]
+        }
+      },
+      {
+        "id": 5,
+        "model": "tts_models/en/ljspeech/fast_pitch",
+        "idioma": "Inglés",
+        "description": {
+          "fortalezas": [
+            "Rápido y eficiente en la creación de voz",
+            "Ideal para aplicaciones que necesitan respuestas rápidas",
+            "Buena calidad de voz en general",
+            "Rinde bien con frases de longitud media"
+          ],
+          "debilidades": [
+            "Tiene menos variedad de tonos",
+            "No es tan bueno para textos largos",
+            "No suena tan natural con nombres complicados",
+            "Menos expresivo que otros modelos"
+          ]
+        }
+      },
+      {
+        "id": 20,
+        "model": "tts_models/es/mai/tacotron2-DDC",
+        "idioma": "Español",
+        "description": {
+          "fortalezas": [
+            "Perfecto para frases cortas",
+            "Buena entonación en español neutro",
+            "Funciona bien con textos formales"
+          ],
+          "debilidades": [
+            "No tiene tantos datos para otros acentos",
+            "No es tan bueno para textos largos",
+            "Menos expresivo en textos emocionales",
+            "Requiere más recursos de la computadora",
+            "Puede tener problemas con nombres propios"
+          ]
+        }
+      },
+      {
+        "id": 21,
+        "model": "tts_models/es/css10/vits",
+        "idioma": "Español",
+        "description": {
+          "fortalezas": [
+            "Alta calidad para textos complicados",
+            "Buena expresividad en frases largas",
+            "Control preciso de la entonación",
+            "Adecuado para diferentes tipos de uso"
+          ],
+          "debilidades": [
+            "Difícil de ajustar en algunos casos",
+            "Consume más recursos",
+            "Acento Español",
+            "Menos eficiente con nombres complejos",
+            "No es tan bueno para generar voz en tiempo real"
+          ]
+        }
+      }
     ]
-}
+  }
+  
