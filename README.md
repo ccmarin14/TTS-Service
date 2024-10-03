@@ -86,12 +86,7 @@ git clone https://github.com/coqui-ai/TTS
 cd TTS
 ```
 
-5. Actualiza pip.
-```bash
-pip install --upgrade pip setuptools wheel
-```
-
-6.  Ejecuta el siguiente comando para instalar las dependencias:
+3.  Ejecuta el siguiente comando para instalar las dependencias:
 ```bash
 pip install -e .[all,dev,notebooks]
 ```
@@ -100,7 +95,7 @@ pip install -e .[all,dev,notebooks]
 Para iniciar el servicio, ejecuta el siguiente comando en la terminal desde la raíz del proyecto:
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 Accede a la aplicación en `http://{direccion o nombre}:8000`.
