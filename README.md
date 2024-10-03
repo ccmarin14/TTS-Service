@@ -1,10 +1,9 @@
-**Servicio de TTS**
-===================
+# Servicio de TTS
 
-**Descripción**\
+## Descripción
 Este proyecto es un backend desarrollado con FastAPI, siguiendo el patrón de diseño Modelo-Vista-Controlador (MVC). Su principal objetivo es proporcionar un servicio de Text-to-Speech (TTS) que permite convertir texto en audio.
 
-**Estructura del Proyecto**\
+## Estructura del Proyecto
 `/TTS-Service`
 
 -   **app/**
@@ -26,18 +25,61 @@ Este proyecto es un backend desarrollado con FastAPI, siguiendo el patrón de di
 -   `requirements.txt`: Dependencias del proyecto.
 -   `README.md`: Documentación del proyecto.
 
-**Requerimientos**
-- python >= 3.6, < 3.9
+## Requerimientos 
+- python >= 3.9 < 3.12
 - pip
 - venv de python
 - Apache
 
-**Instalación**
+## Instalación
 
-1.  Asegúrate de cumplir con los requerimientos.
-2.  Clona el repositorio.
-3.  Accede a la carpeta del proyecto.
-4.  Genera un espacio virtual.
+Asegúrate de cumplir con los requerimientos antes de empezar.
+
+1. Crear una carpeta con el nombre del proyecto.
+2. Realiza la instalación de TTS y de TTS-Service dentro del misma carpeta.
+
+### Instalación TTS
+
+1.  Clona el repositorio de TTS (Para poder modificar o entrenar modelos propios)
+```bash
+git clone https://github.com/coqui-ai/TTS
+```
+
+2.  Accede a la carpeta del proyecto.
+```bash
+cd TTS
+```
+
+3.  Genera un espacio virtual.
+```bash
+python -m venv tts_service
+#or 
+python3 -m venv tts_service
+```
+
+4. Actualiza pip.
+```bash
+pip install --upgrade pip setuptools wheel
+```
+
+5.  Ejecuta el siguiente comando para instalar las dependencias:
+```bash
+pip install -e .[all,dev,notebooks]
+```
+
+### Instalación TTS
+1.  Clona el repositorio TTS-Service.
+
+```bash
+git clone https://github.com/ccmarin14/TTS-Service.git
+```
+
+2.  Accede a la carpeta del proyecto.
+
+```bash
+cd TTS-Service
+```
+3.  Genera un espacio virtual.
 
 ```bash
 python -m venv tts_service
@@ -45,7 +87,7 @@ python -m venv tts_service
 python3 -m venv tts_service
 ```
 
-5. Accede al entorno virtual.
+4. Accede al entorno virtual.
 
 ```bash
 #Windows
@@ -55,19 +97,19 @@ tts_service\Scripts\activate
 source tts_service/bin/activate
 ```
 
-6. Actualiza pip.
+5. Actualiza pip.
 
 ```bash
 pip install --upgrade pip setuptools wheel
 ```
 
-7.  Ejecuta el siguiente comando para instalar las dependencias:
+6.  Ejecuta el siguiente comando para instalar las dependencias:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Ejecutar el Servicio**\
+## Ejecutar el Servicio
 Para iniciar el servicio, ejecuta el siguiente comando en la terminal desde la raíz del proyecto:
 
 ```bash
@@ -76,13 +118,13 @@ uvicorn app.main:app --reload
 
 Accede a la aplicación en `http://{direccion o nombre}:8000`.
 
-**Documentación Automática**\
+##Documentación Automática
 FastAPI proporciona documentación automática que puede ser accedida en:
 
 -   Swagger UI: `http://{direccion o nombre}:8000/docs`
 -   ReDoc: `http://{direccion o nombre}:8000/redoc`
 
-**Uso del Servicio**\
+## Uso del Servicio
 Para utilizar el servicio de TTS, realiza una solicitud POST a la ruta `/tts/` con el siguiente cuerpo en formato JSON:
 
 ```json
@@ -102,10 +144,7 @@ Si la síntesis de audio es exitosa, recibirás una respuesta como la siguiente:
 }
 ```
 
-**Errores**\
-Si ocurre un error durante el proceso de síntesis, recibirás un mensaje de error con el código de estado correspondiente.
-
-**Mejores Prácticas**
+## Mejores Prácticas
 
 -   Validación: Asegúrate de validar todas las entradas utilizando Pydantic.
 -   Manejo de Errores: Implementa manejo de errores adecuado con excepciones de FastAPI.
