@@ -55,7 +55,13 @@ tts_service\Scripts\activate
 source tts_service/bin/activate
 ```
 
-6.  Ejecuta el siguiente comando para instalar las dependencias:
+6. Actualiza pip.
+
+```bash
+pip install --upgrade pip setuptools wheel
+```
+
+7.  Ejecuta el siguiente comando para instalar las dependencias:
 
 ```bash
 pip install -r requirements.txt
