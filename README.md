@@ -37,63 +37,28 @@ Asegúrate de cumplir con los requerimientos antes de empezar.
 
 1. Crear una carpeta con el nombre del proyecto.
 2. Realiza la instalación de TTS y de TTS-Service dentro del misma carpeta.
+3. Luego de ingresar en el espacio virtual, mantenerse en la instalación y ejecución.
 
-### Instalación TTS
-
-1.  Clona el repositorio de TTS (Para poder modificar o entrenar modelos propios)
-```bash
-git clone https://github.com/coqui-ai/TTS
-```
-
-2.  Accede a la carpeta del proyecto.
-```bash
-cd TTS
-```
-
-3.  Genera un espacio virtual.
-```bash
-python -m venv tts_service
-#or 
-python3 -m venv tts_service
-```
-
-4. Actualiza pip.
-```bash
-pip install --upgrade pip setuptools wheel
-```
-
-5.  Ejecuta el siguiente comando para instalar las dependencias:
-```bash
-pip install -e .[all,dev,notebooks]
-```
-
-### Instalación TTS
+### Instalación TTS-Service
 1.  Clona el repositorio TTS-Service.
-
 ```bash
 git clone https://github.com/ccmarin14/TTS-Service.git
 ```
 
 2.  Accede a la carpeta del proyecto.
-
 ```bash
 cd TTS-Service
 ```
-3.  Genera un espacio virtual.
 
+3.  Genera un espacio virtual.
 ```bash
 python -m venv tts_service
 #or 
 python3 -m venv tts_service
 ```
 
-4. Accede al entorno virtual.
-
+4. Accede al espacio virtual.
 ```bash
-#Windows
-tts_service\Scripts\activate
-
-#Linux
 source tts_service/bin/activate
 ```
 
@@ -107,6 +72,28 @@ pip install --upgrade pip setuptools wheel
 
 ```bash
 pip install -r requirements.txt
+```
+
+### Instalación TTS
+
+1.  Clona el repositorio de TTS (Para poder modificar o entrenar modelos propios)
+```bash
+git clone https://github.com/coqui-ai/TTS
+```
+
+2.  Accede a la carpeta del proyecto.
+```bash
+cd TTS
+```
+
+5. Actualiza pip.
+```bash
+pip install --upgrade pip setuptools wheel
+```
+
+6.  Ejecuta el siguiente comando para instalar las dependencias:
+```bash
+pip install -e .[all,dev,notebooks]
 ```
 
 ## Ejecutar el Servicio
