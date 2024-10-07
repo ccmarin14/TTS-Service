@@ -10,3 +10,6 @@ cron.log
 
 # ignore environment directory
 tts-service
+
+# ignore resources files 
+resources/*
