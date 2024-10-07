@@ -1,0 +1,12 @@
+# ignore git directory
+.git
+
+# ignore cache directories
+__pycache__
+*/__pycache__
+
+# ignore logs files
+cron.log
+
+# ignore environment directory
+tts-service
