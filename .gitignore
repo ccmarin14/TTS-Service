@@ -1,9 +1,8 @@
-# ignore git directory
+# ignore git directories
 .git
 
 # ignore cache directories
-__pycache__
-*/__pycache__
+**/__pycache__/
 
 # ignore logs files
 cron.log
@@ -11,5 +10,5 @@ cron.log
 # ignore environment directory
 tts-service
 
-# ignore resources files 
-resources/*
+# ignore resources files
+app/resources/*
