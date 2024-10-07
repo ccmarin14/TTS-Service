@@ -16,6 +16,7 @@ class TTSService:
         model_name = model_data['model']
         
         # Asegurarse de que el texto esté en UTF-8
+        print(repr(text))
         text = text.encode('utf-8', 'replace').decode('utf-8')
 
         # Inicializar el modelo y generar el audio
