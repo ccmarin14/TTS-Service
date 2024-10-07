@@ -17,4 +17,4 @@ class TTSService:
         
         # Inicializar el modelo y generar el audio
         tts = TTS(model_name=model_name)
-        tts.tts_to_file(text, file_path=output_path, speed=1.0, pitch=1.0)
+        tts.tts_to_file(text, file_path=output_path, speed=0.8, pitch=1.0)
