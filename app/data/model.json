@@ -41,46 +41,6 @@
       },
       {
         "id": 2,
-        "model": "tts_models/en/ljspeech/glow-tts",
-        "idioma": "Inglés",
-        "description": {
-          "fortalezas": [
-            "Genera voz de forma rápida y eficiente",
-            "Funciona bien con diferentes tipos de texto",
-            "Es rápido al crear audio",
-            "Buena calidad en frases cortas o medianas"
-          ],
-          "debilidades": [
-            "La calidad varía según los datos usados",
-            "No es tan natural en textos largos",
-            "Menos expresivo que otros modelos",
-            "No es tan bueno con nombres complicados"
-          ]
-        }
-      },
-      {
-        "id": 3,
-        "model": "tts_models/en/ljspeech/speedy-speech",
-        "idioma": "Inglés",
-        "description": {
-          "fortalezas": [
-            "Extremadamente rápido para crear voz",
-            "Ideal para textos largos",
-            "Fluidez en la lectura",
-            "No necesita mucha potencia de la computadora",
-            "Perfecto para uso en tiempo real"
-          ],
-          "debilidades": [
-            "Pierde calidad por ser tan rápido",
-            "No es tan bueno para frases complicadas",
-            "Voz menos expresiva",
-            "Reducción en la calidad del tono",
-            "No es la mejor opción para textos cortos"
-          ]
-        }
-      },
-      {
-        "id": 4,
         "model": "tts_models/en/ljspeech/tacotron2-DCA",
         "idioma": "Inglés",
         "description": {
@@ -95,25 +55,6 @@
             "Consume más recursos de la computadora",
             "Más lento en generar voz",
             "No funciona tan bien en frases cortas"
-          ]
-        }
-      },
-      {
-        "id": 5,
-        "model": "tts_models/en/ljspeech/fast_pitch",
-        "idioma": "Inglés",
-        "description": {
-          "fortalezas": [
-            "Rápido y eficiente en la creación de voz",
-            "Ideal para aplicaciones que necesitan respuestas rápidas",
-            "Buena calidad de voz en general",
-            "Rinde bien con frases de longitud media"
-          ],
-          "debilidades": [
-            "Tiene menos variedad de tonos",
-            "No es tan bueno para textos largos",
-            "No suena tan natural con nombres complicados",
-            "Menos expresivo que otros modelos"
           ]
         }
       },
