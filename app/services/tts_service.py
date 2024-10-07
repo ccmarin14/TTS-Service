@@ -18,12 +18,12 @@ class TTSService:
         model_name = model_data['model']
         
         # Inicializar el modelo y generar el audio
-        text = clean_text(text)
+        text = self.clean_text(text)
         tts = TTS(model_name=model_name)
         tts.tts_to_file(text, file_path=output_path, speed=1.0, pitch=1.0)
 
 
 
-    def clean_text(text):
+    def clean_text(self, text: str) -> str:
         # Elimina caracteres no alfanuméricos excepto espacios
         return re.sub(r'[^a-zA-Z0-9\s]', '', text)
