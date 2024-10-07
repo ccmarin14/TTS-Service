@@ -17,6 +17,5 @@ class TTSService:
         model_name = model_data['model']
         
         # Inicializar el modelo y generar el audio
-        clean_text = re.sub(r'[^\x20-\x7E]', '', text)
         tts = TTS(model_name=model_name)
-        tts.tts_to_file(clean_text, file_path=output_path, speed=0.5, pitch=1.0)
+        tts.tts_to_file(text, file_path=output_path, speed=1.0, pitch=1.0)
