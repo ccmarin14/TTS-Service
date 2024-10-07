@@ -1,3 +1,3 @@
 #!/bin/bash
-cd .. || exit
+cd /root/TTS-Service || exit
 git pull origin master
