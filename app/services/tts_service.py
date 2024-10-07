@@ -4,7 +4,7 @@ from TTS.api import TTS
 class TTSService:
     def __init__(self):
         # Cargar los modelos desde el archivo JSON
-        with open("app/data/model.json", "r") as f:
+        with open("app/data/model.json", "r", encoding="utf-8") as f:
             data = json.load(f)
             self.models = {model['id']: model for model in data['models']}
 
@@ -21,3 +21,4 @@ class TTSService:
         # Inicializar el modelo y generar el audio
         tts = TTS(model_name=model_name)
         tts.tts_to_file(text, file_path=output_path, speed=1.0, pitch=1.0)
+
