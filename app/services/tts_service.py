@@ -36,4 +36,6 @@ class TTSService:
         # Inicializar el modelo y generar el audio
         tts = TTS(model_name=model_name)
         tts.tts_to_file(text, file_path=audio_path, speed=1.0, pitch=1.0)
-        return str(audio_path)
+        timestamps = tts.get_timestamps(text)
+        return {"audio_path": str(audio_path), "timestamps": timestamps}
+
