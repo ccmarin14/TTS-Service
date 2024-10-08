@@ -1,17 +1,9 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.controllers.tts_controller import router as tts_router
 
 app = FastAPI()
-
-@app.middleware("http")
-async def prioritize_get_requests(request: Request, call_next):
-    if request.method == "GET" and request.url.path.startswith("/app/resources/audios"):
-        response = await call_next(request)
-        return response
-    else:
-        return await call_next(request)
 
 # Configuración de CORS
 origins = [
