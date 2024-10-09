@@ -34,7 +34,7 @@ class TTSService:
             return str(audio_path)
         
         # Inicializar el modelo y generar el audio
-        tts = TTS(model_name=model_name)
+        tts = TTS(model_name='tts_models/es/css10/vits')
         tts.tts_to_file(text, file_path=audio_path, speed=1.0, pitch=1.0)
         return str(audio_path)
 
