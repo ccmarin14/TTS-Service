@@ -13,7 +13,7 @@ tts_service = TTSService(file_service)
 @router.post("/tts/")
 async def create_tts(request: TextToSpeechRequest):
     output_path = "app/resources/audio.wav"
-    model = request.model if request.model is not None else 1
+    model = request.model if request.model is not None else 21
     try:
         # Verifica si ya existe un audio para el texto
         audio_path = tts_service.synthesize(request.text, model)
