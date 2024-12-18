@@ -30,8 +30,8 @@ Servicio API REST construido con FastAPI que convierte texto a voz utilizando
 
 #### Método Rápido
 ```bash
-docker pull tuusuario/tts-service:latest
-docker run -p 8000:8000 --env-file .env tuusuario/tts-service:latest
+docker pull cristianmaringma/tts-service:latest
+docker run -p 8000:8000 --env-file .env cristianmaringma/tts-service:latest
 ```
 
 #### Usando Docker Compose
@@ -39,7 +39,7 @@ docker run -p 8000:8000 --env-file .env tuusuario/tts-service:latest
 ```yaml
 services:
   tts-service:
-    image: tuusuario/tts-service:latest
+    image: cristianmaringma/tts-service:latest
     ports:
       - "8000:8000"
     env_file:
@@ -186,7 +186,7 @@ graph TD
 
 Para actualizar a la última versión:
 ```bash
-docker pull tuusuario/tts-service:latest
+docker pull cristianmaringma/tts-service:latest
 ```
 
 ### Logs y Monitoreo
