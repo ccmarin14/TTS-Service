@@ -1,8 +1,8 @@
 # Servicio de Text-to-Speech (TTS)
 
-![Docker Pulls](https://img.shields.io/docker/pulls/cristianmaringma/tts-service)
+![Docker Pulls](https://img.shields.io/docker/pulls/cristianmaringma/tts-service?style=flat-square)
 ![Docker Image Size](https://img.shields.io/docker/image-size/cristianmaringma/tts-service)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/cristianmaringma/tts-service)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/ccmarin14/tts-service)
 
 ## Descripción
 
@@ -35,7 +35,30 @@ docker run -p 8000:8000 --env-file .env cristianmaringma/tts-service:latest
 ```
 
 #### Usando Docker Compose
-1. Crea un archivo docker-compose.yml:
+1. Crea un nuevo directorio para el proyecto y dentro crea un archivo .env con el siguiente contenido o descarga:
+```bash
+# API Credentials
+API_USER_ID=your_user_id
+API_AUTH_TOKEN=your_auth_token
+
+# AWS Credentials
+AWS_ACCESS_KEY=your_access_key
+AWS_SECRET_KEY=your_secret_key
+AWS_REGION=your_region
+AWS_BUCKET=your_bucket
+AWS_URL=your_s3_url
+
+# Database Credentials
+DB_HOST=your_host
+DB_USER=your_user
+DB_PASSWORD=your_password
+DB_NAME=your_database
+
+# CORS Settings (comma-separated URLs)
+CORS_ORIGINS=["http://localhost:3000","http://localhost:5500","http://127.0.0.1:5500"]
+```
+
+2. Crea un archivo docker-compose.yml:
 ```yaml
 services:
   tts-service:
@@ -44,12 +67,6 @@ services:
       - "8000:8000"
     env_file:
       - .env
-```
-
-2. Crea y configura tu archivo .env:
-```bash
-cp .env.example .env
-# Edita .env con tus credenciales
 ```
 
 3. Inicia el servicio:
