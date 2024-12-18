@@ -28,15 +28,8 @@ Servicio API REST construido con FastAPI que convierte texto a voz utilizando
 
 ### 1. Usando Docker (Recomendado)
 
-#### Método Rápido
-```bash
-docker pull cristianmaringma/tts-service:latest
-docker run -p 8000:8000 --env-file .env cristianmaringma/tts-service:latest
-```
-
-#### Usando Docker Compose
-1. Crea un nuevo directorio para el proyecto y dentro crea un archivo .env con el siguiente contenido o descarga:
-```bash
+1. Crea un archivo .env con las siguientes variables (o descarga el ejemplo):
+```.env
 # API Credentials
 API_USER_ID=your_user_id
 API_AUTH_TOKEN=your_auth_token
@@ -58,7 +51,16 @@ DB_NAME=your_database
 CORS_ORIGINS=["http://localhost:3000","http://localhost:5500","http://127.0.0.1:5500"]
 ```
 
-2. Crea un archivo docker-compose.yml:
+2. Puedes ejecutar el servicio de dos formas:
+
+#### Opción A: Usando Docker directamente
+```bash
+docker pull cristianmaringma/tts-service:latest
+docker run -p 8000:8000 --env-file .env cristianmaringma/tts-service:latest
+```
+
+#### Opción B: Usando Docker Compose
+1. Crea un archivo docker-compose.yml:
 ```yaml
 services:
   tts-service:
@@ -69,7 +71,7 @@ services:
       - .env
 ```
 
-3. Inicia el servicio:
+2. Inicia el servicio:
 ```bash
 docker-compose up -d
 ```
@@ -91,32 +93,6 @@ cp .env.example .env
 ```bash
 docker-compose up -d
 ```
-
-## Configuración
-
-El servicio requiere las siguientes variables de entorno en tu archivo .env:
-
-```yaml
-# API Credentials
-API_USER_ID=your_user_id
-API_AUTH_TOKEN=your_auth_token
-
-# AWS Credentials
-AWS_ACCESS_KEY=your_access_key
-AWS_SECRET_KEY=your_secret_key
-AWS_REGION=your_region
-AWS_BUCKET=your_bucket
-AWS_URL=your_s3_url
-
-# Database Credentials
-DB_HOST=your_host
-DB_USER=your_user
-DB_PASSWORD=your_password
-DB_NAME=your_database
-
-# CORS Settings (comma-separated URLs)
-CORS_ORIGINS=["http://localhost:3000","http://localhost:5500","http://127.0.0.1:5500"]
-``` 
 
 ## Estructura del Proyecto
 
