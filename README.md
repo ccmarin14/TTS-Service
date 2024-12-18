@@ -130,7 +130,7 @@ CORS_ORIGINS=["http://localhost:3000","http://localhost:5500","http://127.0.0.1:
 POST /tts/
 ```
 
-###Payload:
+### Payload:
 
 ```json
 {
@@ -157,7 +157,24 @@ GET /models/
 ```
 
 ## Flujo de la aplicación
-![Flujo de la aplicación](https://drive.google.com/file/d/1CYD1aM8KWDwBqN7PG7GOmw1bFul_tTBZ/view?usp=sharing)
+```mermaid
+graph TD
+    A[Cliente] -->|POST /tts/| B[TTSController]
+    B -->|Verifica hash| C[DBService]
+    C -->|Si existe| D[Retorna URL existente]
+    C -->|Si no existe| E[TTSService]
+    E -->|Selecciona voz| G[Configuración YAML]
+    G -->|Genera audio| H[Play.ht API]
+    H -->|Audio generado| I[FileService]
+    I -->|Archivo temporal| J[S3Service]
+    J -->|Sube archivo| K[AWS S3]
+    K -->|Obtiene URL| L[DBService]
+    L -->|Guarda metadata| M[MySQL]
+    M -->|URL del audio| N[Respuesta al cliente]
+    D -->M
+```
+
+![Flujo de la aplicación](./flujo.png)
 
 
 
