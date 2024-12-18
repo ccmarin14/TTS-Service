@@ -2,3 +2,7 @@ fastapi
 uvicorn
 pydantic
 numpy
+pyyaml
+boto3
+mysql-connector-python
+requests

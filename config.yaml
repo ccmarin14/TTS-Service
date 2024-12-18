@@ -1,0 +1,29 @@
+api:
+  url: "https://api.play.ht/api/v2/tts/stream"
+  headers:
+    Content-Type: "application/json"
+    accept: "audio/mpeg"
+  credentials:
+    X-USER-ID: ${API_USER_ID}
+    AUTHORIZATION: ${API_AUTH_TOKEN}
+  defaults:
+    voice_engine: "Play3.0-mini"
+    output_format: "mp3"
+    speed: 0.96
+  cors:
+    origins: ${CORS_ORIGINS}
+
+aws:
+  access_key_id: ${AWS_ACCESS_KEY}
+  secret_access_key: ${AWS_SECRET_KEY}
+  region: ${AWS_REGION}
+  bucket: ${AWS_BUCKET}
+  url: ${AWS_URL}
+  use_path_style_endpoint: false
+
+db:
+  mysql:
+    host: ${DB_HOST}
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
+    database: ${DB_NAME}

@@ -1,133 +1,200 @@
-# Servicio de TTS
+# Servicio de Text-to-Speech (TTS)
+
+![Docker Pulls](https://img.shields.io/docker/pulls/cristianmaringma/tts-service)
+![Docker Image Size](https://img.shields.io/docker/image-size/cristianmaringma/tts-service)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/cristianmaringma/tts-service)
 
 ## Descripción
-Este proyecto es un backend desarrollado con FastAPI, siguiendo el patrón de diseño Modelo-Vista-Controlador (MVC). Su principal objetivo es proporcionar un servicio de Text-to-Speech (TTS) que permite convertir texto en audio.
 
-## Estructura del Proyecto
-`/TTS-Service`
+Servicio API REST construido con FastAPI que convierte texto a voz utilizando el servicio Play.ht. El sistema implementa cacheo de audios, almacenamiento en AWS S3 y registro en base de datos MySQL.
 
--   **app/**
-    -   `__init__.py`
-    -   `main.py`: Archivo principal donde se inicializa FastAPI.
-    -   **models/**: Carpeta para modelos de datos.
-        -   `__init__.py`
-        -   `tts_model.py`: Definición de modelos usando Pydantic.
-    -   **services/**: Carpeta para la lógica del negocio.
-        -   `__init__.py`
-        -   `tts_service.py`: Lógica para manejar TTS, incluyendo la configuración de modelos y la síntesis de audio.
-    -   **controllers/**: Carpeta para controladores (rutas).
-        -   `__init__.py`
-        -   `tts_controller.py`: Rutas relacionadas con TTS, donde se gestionan las solicitudes de síntesis de audio.
-    -   **resources/**: Carpeta para almacenar archivos de audio generados.
-        -   `audio.wav`: Archivo de audio sintetizado.
-    -   **utils/**: Carpeta para utilidades.
-        -   `__init__.py`
--   `requirements.txt`: Dependencias del proyecto.
--   `README.md`: Documentación del proyecto.
+## Características Principales
 
-## Requerimientos 
-- python >= 3.9 < 3.12
-- pip
-- venv de python
-- Apache
+-   Conversión de texto a voz mediante Play.ht API
+-   Soporte multiidioma (Inglés y Español)
+-   Voces masculinas y femeninas
+-   Almacenamiento en AWS S3
+-   Cacheo de audios generados
+-   Base de datos MySQL para metadata
+-   Configuración mediante archivos YAML
 
-## Instalación
+## Requerimientos
+-   Python >= 3.9 < 3.12
+-   MySQL
+-   Cuenta AWS (S3)
+-   Cuenta Play.ht
 
-Asegúrate de cumplir con los requerimientos antes de empezar.
+## Instalación y Uso
 
-1. Crear una carpeta con el nombre del proyecto.
-2. Realiza la instalación de TTS y de TTS-Service dentro del misma carpeta.
-3. Luego de ingresar en el espacio virtual, mantenerse en la instalación y ejecución.
+### 1. Usando Docker (Recomendado)
 
-### Instalación TTS-Service
-1.  Clona el repositorio TTS-Service.
+#### Método Rápido
+```bash
+docker pull tuusuario/tts-service:latest
+docker run -p 8000:8000 --env-file .env tuusuario/tts-service:latest
+```
+
+#### Usando Docker Compose
+1. Crea un archivo docker-compose.yml:
+```yaml
+services:
+  tts-service:
+    image: tuusuario/tts-service:latest
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+```
+
+2. Crea y configura tu archivo .env:
+```bash
+cp .env.example .env
+# Edita .env con tus credenciales
+```
+
+3. Inicia el servicio:
+```bash
+docker-compose up -d
+```
+
+### 2. Instalación Local (Para Desarrollo)
+
+1. Clona el repositorio:
 ```bash
 git clone https://github.com/ccmarin14/TTS-Service.git
 ```
 
-2.  Accede a la carpeta del proyecto.
+2. Crea y configura tu archivo .env:
 ```bash
-cd TTS-Service
+cp .env.example .env
+# Edita .env con tus credenciales
 ```
 
-3.  Genera un espacio virtual.
+3. Inicia el servicio:
 ```bash
-python -m venv tts_service
-#or 
-python3 -m venv tts_service
+docker-compose up -d
 ```
 
-4. Accede al espacio virtual.
-```bash
-source tts_service/bin/activate
+## Configuración
+
+El servicio requiere las siguientes variables de entorno en tu archivo .env:
+
+```yaml
+# API Credentials
+API_USER_ID=your_user_id
+API_AUTH_TOKEN=your_auth_token
+
+# AWS Credentials
+AWS_ACCESS_KEY=your_access_key
+AWS_SECRET_KEY=your_secret_key
+AWS_REGION=your_region
+AWS_BUCKET=your_bucket
+AWS_URL=your_s3_url
+
+# Database Credentials
+DB_HOST=your_host
+DB_USER=your_user
+DB_PASSWORD=your_password
+DB_NAME=your_database
+
+# CORS Settings (comma-separated URLs)
+CORS_ORIGINS=["http://localhost:3000","http://localhost:5500","http://127.0.0.1:5500"]
+``` 
+
+## Estructura del Proyecto
+
+```
+/TTS-Service
+├── app/
+│   ├── controllers/
+│   │   └── tts_controller.py     # Endpoints de la API
+│   ├── models/
+│   │   └── tts_model.py         # Modelos de datos
+│   ├── services/
+│   │   ├── tts_service.py       # Lógica principal de TTS
+│   │   ├── file_service.py      # Gestión de archivos
+│   │   ├── s3_service.py        # Integración con AWS S3
+│   │   └── db_service.py        # Operaciones con MySQL
+│   ├── data/
+│   │   └── voices_config.yaml   # Configuración de voces
+│   └── main.py                  # Inicialización de FastAPI
+├── config.yaml                  # Configuración general
+└── requirements.txt            # Dependencias del proyecto
 ```
 
-5. Actualiza pip.
+## Uso de la API
+
+### Convertir Texto a Voz
 
 ```bash
-pip install --upgrade pip setuptools wheel
+POST /tts/
 ```
 
-6.  Ejecuta el siguiente comando para instalar las dependencias:
-
-```bash
-pip install -r requirements.txt
-```
-
-### Instalación TTS
-
-1.  Clona el repositorio de TTS (Para poder modificar o entrenar modelos propios)
-```bash
-git clone https://github.com/coqui-ai/TTS
-```
-
-2.  Accede a la carpeta del proyecto.
-```bash
-cd TTS
-```
-
-3.  Ejecuta el siguiente comando para instalar las dependencias:
-```bash
-pip install -e .[all,dev,notebooks]
-```
-
-## Ejecutar el Servicio
-Para iniciar el servicio, ejecuta el siguiente comando en la terminal desde la raíz del proyecto:
-
-```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-Accede a la aplicación en `http://{direccion o nombre}:8000`.
-
-##Documentación Automática
-FastAPI proporciona documentación automática que puede ser accedida en:
-
--   Swagger UI: `http://{direccion o nombre}:8000/docs`
--   ReDoc: `http://{direccion o nombre}:8000/redoc`
-
-## Uso del Servicio
-Para utilizar el servicio de TTS, realiza una solicitud POST a la ruta `/tts/` con el siguiente cuerpo en formato JSON:
+###Payload:
 
 ```json
 {
-  "text": "Texto que deseas convertir a audio.",
-  "model": 2
+  "text": "Texto a convertir",
+  "language": "Spanish",
+  "gender": "F",
+  "model": "Carmen"
 }
 ```
 
-**Respuesta Exitosa**\
-Si la síntesis de audio es exitosa, recibirás una respuesta como la siguiente:
+### Respuesta:
 
 ```json
 {
-  "message": "Audio synthesized successfully",
-  "audio_path": "app/resources/audio.wav"
+  "message": "Audio synthesized successfully",
+  "audio_path": "https://tu-bucket.s3.amazonaws.com/bilinguismo/audios/hash.mp3"
 }
 ```
 
-## Mejores Prácticas
+### Obtener Modelos Disponibles
 
--   Validación: Asegúrate de validar todas las entradas utilizando Pydantic.
--   Manejo de Errores: Implementa manejo de errores adecuado con excepciones de FastAPI.
--   Documentación: Aprovecha la generación automática de documentación de FastAPI.
+```bash
+GET /models/
+```
+
+## Flujo de la aplicación
+![Flujo de la aplicación](https://drive.google.com/file/d/1CYD1aM8KWDwBqN7PG7GOmw1bFul_tTBZ/view?usp=sharing)
+
+
+
+## Versiones Disponibles
+
+- `latest`: Última versión estable
+- `1.0.0`: Primera versión estable
+- `1.0.0-alpine`: Versión ligera basada en Alpine Linux
+
+## Mantenimiento
+
+### Actualización de la Imagen
+
+Para actualizar a la última versión:
+```bash
+docker pull tuusuario/tts-service:latest
+```
+
+### Logs y Monitoreo
+```bash
+# Ver logs del contenedor
+docker logs tts-service
+
+# Ver estadísticas de uso
+docker stats tts-service
+```
+
+## Documentación API
+-   Swagger UI: http://localhost:8000/docs
+-   ReDoc: http://localhost:8000/redoc
+
+## Soporte
+
+Si encuentras algún problema o tienes alguna sugerencia, por favor:
+1. Revisa los issues existentes en GitHub
+2. Abre un nuevo issue si es necesario
+3. Contacta al equipo de mantenimiento
+
+## Licencia
+©2024, GMA Digital - Todos los derechos reservados.

@@ -1,0 +1,43 @@
+voices:
+  English:
+    M:
+      - id: "s3://voice-cloning-zero-shot/baf1ef41-36b6-428c-9bdf-50ba54682bd8/original/manifest.json"
+        model: "Angelo"
+      - id: "s3://voice-cloning-zero-shot/e46b4027-b38d-4d24-b292-38fbca2be0ef/original/manifest.json"
+        model: "Atlas"
+      - id: "s3://voice-cloning-zero-shot/4c627545-b9c0-4791-ae8e-f48f5475247c/bryansaad/manifest.json"
+        model: "Bryan"
+    F:
+      - id: "s3://voice-cloning-zero-shot/d9ff78ba-d016-47f6-b0ef-dd630f59414e/female-cs/manifest.json"
+        model: "Ariana"
+      - id: "s3://voice-cloning-zero-shot/8ceaa707-4141-46c0-a610-4a2014d7ea97/audreysaad/manifest.json"
+        model: "Audrey"
+      - id: "s3://voice-cloning-zero-shot/fdb74aec-ede9-45f8-ad87-71cb45f01816/original/manifest.json"
+        model: "Carmen"
+      - id: "s3://voice-cloning-zero-shot/e040bd1b-f190-4bdb-83f0-75ef85b18f84/original/manifest.json"
+        model: "Deedee"
+      - id: "s3://voice-cloning-zero-shot/b709b944-9256-4578-b9d8-a1ce4d729022/eileensaad/manifest.json"
+        model: "Elieen"
+      - id: "s3://peregrine-voices/evelyn 2 saad parrot/manifest.json"
+        model: "Evelyn"
+      - id: "s3://voice-cloning-zero-shot/f43cc4b4-b193-4a13-a903-e6b125c3d572/original/manifest.json"
+        model: "Luna"
+      - id: "s3://voice-cloning-zero-shot/831bd330-85c6-4333-b2b4-10c476ea3491/original/manifest.json"
+        model: "Nia"
+      - id: "s3://voice-cloning-zero-shot/2a7ddfc5-d16a-423a-9441-5b13290998b8/novasaad/manifest.json"
+        model: "Nova"
+      - id: "s3://voice-cloning-zero-shot/1f44b3e7-22ea-4c2e-87d0-b4d9c8f1d47d/sophia/manifest.json"
+        model: "Sophia"
+      - id: "s3://voice-cloning-zero-shot/7142f297-c55f-451d-8863-108d5101b5ed/susantrainingsaad/manifest.json"
+        model: "Susan"
+  Spanish:
+    F:
+      - id: "s3://voice-cloning-zero-shot/b815208f-4677-4114-a0d4-64b71102c097/original/manifest.json"
+        model: "Carmen"
+      - id: "s3://voice-cloning-zero-shot/3198f5d0-664c-4835-9728-92eb8cdd556c/original/manifest.json"
+        model: "Violeta"
+      - id: "s3://voice-cloning-zero-shot/5694d5e5-2dfe-4440-8cc8-e2a69c3e7560/original/manifest.json"
+        model: "Patricia"
+    M:
+      - id: "s3://voice-cloning-zero-shot/4289181f-48fc-4c52-911f-6e769086eb98/original/manifest.json"
+        model: "Xavi"

@@ -12,3 +12,6 @@ tts-service
 
 # ignore resources files
 app/resources/*
+
+# ignore environment variables
+.env
