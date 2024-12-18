@@ -1,6 +1,6 @@
 services:
   tts-service:
-    build: .
+    image: cristianmaringma/tts-service:latest
     ports:
       - "8000:8000"
     volumes:
