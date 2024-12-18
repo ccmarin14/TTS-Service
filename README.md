@@ -174,10 +174,6 @@ graph TD
     D -->M
 ```
 
-![Flujo de la aplicación](./flujo.png)
-
-
-
 ## Versiones Disponibles
 
 - `latest`: Última versión estable
