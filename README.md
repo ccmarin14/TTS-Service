@@ -51,7 +51,21 @@ DB_NAME=your_database
 CORS_ORIGINS=["http://localhost:3000","http://localhost:5500","http://127.0.0.1:5500"]
 ```
 
-2. Puedes ejecutar el servicio de dos formas:
+2. Crea la tabla en tu base de datos MySQL:
+```sql
+CREATE TABLE generated_audios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    input_text TEXT NOT NULL,
+    language VARCHAR(50) NOT NULL,
+    gender CHAR(1) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    file_url VARCHAR(255) NOT NULL,
+    audio_hash VARCHAR(64) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+3. Puedes ejecutar el servicio de dos formas:
 
 #### Opción A: Usando Docker directamente
 ```bash
@@ -99,20 +113,20 @@ docker-compose up -d
 ```
 /TTS-Service
 ├── app/
-│   ├── controllers/
-│   │   └── tts_controller.py     # Endpoints de la API
-│   ├── models/
-│   │   └── tts_model.py         # Modelos de datos
-│   ├── services/
-│   │   ├── tts_service.py       # Lógica principal de TTS
-│   │   ├── file_service.py      # Gestión de archivos
-│   │   ├── s3_service.py        # Integración con AWS S3
-│   │   └── db_service.py        # Operaciones con MySQL
-│   ├── data/
-│   │   └── voices_config.yaml   # Configuración de voces
-│   └── main.py                  # Inicialización de FastAPI
-├── config.yaml                  # Configuración general
-└── requirements.txt            # Dependencias del proyecto
+│   ├── controllers/
+│   │  └── tts_controller.py    # Endpoints de la API
+│   ├── models/
+│   │  └── tts_model.py        # Modelos de datos
+│   ├── services/
+│   │  ├── tts_service.py      # Lógica principal de TTS
+│   │  ├── file_service.py     # Gestión de archivos
+│   │  ├── s3_service.py       # Integración con AWS S3
+│   │  └── db_service.py       # Operaciones con MySQL
+│   ├── data/
+│   │  └── voices_config.yaml  # Configuración de voces
+│   └── main.py                 # Inicialización de FastAPI
+├── config.yaml                 # Configuración general
+└── requirements.txt           # Dependencias del proyecto
 ```
 
 ## Uso de la API
@@ -127,10 +141,10 @@ POST /tts/
 
 ```json
 {
-  "text": "Texto a convertir",
-  "language": "Spanish",
-  "gender": "F",
-  "model": "Carmen"
+  "text": "Texto a convertir",
+  "language": "Spanish",
+  "gender": "F",
+  "model": "Carmen"
 }
 ```
 
@@ -138,8 +152,8 @@ POST /tts/
 
 ```json
 {
-  "message": "Audio synthesized successfully",
-  "audio_path": "https://tu-bucket.s3.amazonaws.com/bilinguismo/audios/hash.mp3"
+  "message": "Audio synthesized successfully",
+  "audio_path": "https://tu-bucket.s3.amazonaws.com/bilinguismo/audios/hash.mp3"
 }
 ```
 
@@ -204,3 +218,31 @@ Si encuentras algún problema o tienes alguna sugerencia, por favor:
 
 ## Licencia
 ©2024, GMA Digital - Todos los derechos reservados.
+
+## Estructura de la Base de Datos
+
+### Tabla: generated_audios
+
+```sql
+CREATE TABLE generated_audios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    input_text TEXT NOT NULL,
+    language VARCHAR(50) NOT NULL,
+    gender CHAR(1) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    file_url VARCHAR(255) NOT NULL,
+    audio_hash VARCHAR(64) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| id | INT | Identificador único autoincremental |
+| input_text | TEXT | Texto utilizado para generar el audio |
+| language | VARCHAR(50) | Idioma del audio (ej: "Spanish", "English") |
+| gender | CHAR(1) | Género de la voz ("M" o "F") |
+| model | VARCHAR(100) | Identificador del modelo de voz usado |
+| file_url | VARCHAR(255) | URL del archivo de audio en S3 |
+| audio_hash | VARCHAR(64) | Hash único del audio para cacheo |
+| created_at | TIMESTAMP | Fecha y hora de creación |
