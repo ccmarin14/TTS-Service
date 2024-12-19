@@ -6,3 +6,4 @@ pyyaml
 boto3
 mysql-connector-python
 requests
+python-dotenv
