@@ -142,7 +142,7 @@ POST /tts/
 ```json
 {
   "text": "Texto a convertir",
-  "language": "Spanish",
+  "language": "es-ES",
   "gender": "F",
   "model": "Carmen"
 }
@@ -218,31 +218,3 @@ Si encuentras algún problema o tienes alguna sugerencia, por favor:
 
 ## Licencia
 ©2024, GMA Digital - Todos los derechos reservados.
-
-## Estructura de la Base de Datos
-
-### Tabla: generated_audios
-
-```sql
-CREATE TABLE generated_audios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    input_text TEXT NOT NULL,
-    language VARCHAR(50) NOT NULL,
-    gender CHAR(1) NOT NULL,
-    model VARCHAR(100) NOT NULL,
-    file_url VARCHAR(255) NOT NULL,
-    audio_hash VARCHAR(64) NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| id | INT | Identificador único autoincremental |
-| input_text | TEXT | Texto utilizado para generar el audio |
-| language | VARCHAR(50) | Idioma del audio (ej: "Spanish", "English") |
-| gender | CHAR(1) | Género de la voz ("M" o "F") |
-| model | VARCHAR(100) | Identificador del modelo de voz usado |
-| file_url | VARCHAR(255) | URL del archivo de audio en S3 |
-| audio_hash | VARCHAR(64) | Hash único del audio para cacheo |
-| created_at | TIMESTAMP | Fecha y hora de creación |

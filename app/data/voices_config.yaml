@@ -1,5 +1,5 @@
 voices:
-  English:
+  en-US:
     M:
       - id: "s3://voice-cloning-zero-shot/baf1ef41-36b6-428c-9bdf-50ba54682bd8/original/manifest.json"
         model: "Angelo"
@@ -30,7 +30,7 @@ voices:
         model: "Sophia"
       - id: "s3://voice-cloning-zero-shot/7142f297-c55f-451d-8863-108d5101b5ed/susantrainingsaad/manifest.json"
         model: "Susan"
-  Spanish:
+  es-ES:
     F:
       - id: "s3://voice-cloning-zero-shot/b815208f-4677-4114-a0d4-64b71102c097/original/manifest.json"
         model: "Carmen"
