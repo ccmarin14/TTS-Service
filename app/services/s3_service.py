@@ -19,7 +19,7 @@ class S3Service:
     def upload_audio(self, file_path, object_name):
         """Sube un archivo de audio a un bucket de S3."""
         try:
-            destination_path = f"bilinguismo/audios/{object_name}.mp3"
+            destination_path = f"audios/{object_name}.mp3"
             self.s3_client.upload_file(file_path, self.bucket_name, destination_path)
             
             return(f"{self.s3_client.meta.endpoint_url}/{self.bucket_name}/{destination_path}")  # Retorna la URL del archivo subido

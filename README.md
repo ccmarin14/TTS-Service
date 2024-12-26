@@ -153,7 +153,7 @@ POST /tts/
 ```json
 {
   "message": "Audio synthesized successfully",
-  "audio_path": "https://tu-bucket.s3.amazonaws.com/bilinguismo/audios/hash.mp3"
+  "audio_path": "https://tu-bucket.s3.amazonaws.com/audios/hash.mp3"
 }
 ```
 
