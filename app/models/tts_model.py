@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 class TextToSpeechRequest(BaseModel):
-    language: Optional[str] = "English"
+    language: Optional[str] = "en-US"
     gender: Optional[str] = "F"
-    model: Optional[int] = ""
+    model: Optional[str] = ""
     text: str

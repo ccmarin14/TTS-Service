@@ -32,7 +32,7 @@ class TTSService(YamlLoaderMixin):
         y luego genera un archivo de audio con el texto proporcionado.
         Args:
             text (str): El texto que se convertirá en audio.
-            language (str): El idioma del texto (por ejemplo, 'English', 'Spanish').
+            language (str): El idioma del texto (por ejemplo, 'en-US', 'es-ES').
             gender (str): El género de la voz (por ejemplo, 'M' para masculino, 'F' para femenino).
             model (str): El identificador del modelo de voz. Si se proporciona, se utiliza este modelo directamente.
         Returns:
@@ -72,7 +72,7 @@ class TTSService(YamlLoaderMixin):
         Si se pasa un modelo específico, se utiliza este. De lo contrario,
         selecciona una voz basada en el idioma y género desde la configuración.
         Args:
-            language (str): Idioma de la voz (e.g., "English", "Spanish").
+            language (str): Idioma de la voz (e.g., 'en-US', 'es-ES').
             gender (str): Género de la voz (e.g., "M", "F").
             model (str, optional): ID de un modelo específico. Por defecto, None.
         Returns:
@@ -107,8 +107,8 @@ class TTSService(YamlLoaderMixin):
         # Limpiar espacios al inicio y al final
         text = text.strip()
         
-        if not text.endswith('.'):
-            text += '.'
+        # if not text.endswith('.'):
+        #     text += '.'
 
         audio_name = text + selected_voice
 

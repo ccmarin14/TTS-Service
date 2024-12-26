@@ -32,12 +32,12 @@ voices:
         model: "Susan"
   es-ES:
     F:
-      - id: "s3://voice-cloning-zero-shot/b815208f-4677-4114-a0d4-64b71102c097/original/manifest.json"
+      - id: "s3://voice-cloning-zero-shot/3198f5d0-664c-4835-9728-92eb8cdd556c/original/manifest.json"
         model: "Carmen"
       - id: "s3://voice-cloning-zero-shot/3198f5d0-664c-4835-9728-92eb8cdd556c/original/manifest.json"
         model: "Violeta"
       - id: "s3://voice-cloning-zero-shot/5694d5e5-2dfe-4440-8cc8-e2a69c3e7560/original/manifest.json"
         model: "Patricia"
     M:
-      - id: "s3://voice-cloning-zero-shot/4289181f-48fc-4c52-911f-6e769086eb98/original/manifest.json"
+      - id: "s3://voice-cloning-zero-shot/b815208f-4677-4114-a0d4-64b71102c097/original/manifest.json"
         model: "Xavi"
