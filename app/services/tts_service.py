@@ -107,8 +107,8 @@ class TTSService(YamlLoaderMixin):
         # Limpiar espacios al inicio y al final
         text = text.strip()
         
-        # if not text.endswith('.'):
-        #     text += '.'
+        if not text.endswith('.'):
+            text += '.'
 
         audio_name = text + selected_voice
 

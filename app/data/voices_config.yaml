@@ -34,7 +34,7 @@ voices:
     F:
       - id: "s3://voice-cloning-zero-shot/3198f5d0-664c-4835-9728-92eb8cdd556c/original/manifest.json"
         model: "Carmen"
-      - id: "s3://voice-cloning-zero-shot/3198f5d0-664c-4835-9728-92eb8cdd556c/original/manifest.json"
+      - id: "s3://voice-cloning-zero-shot/831bd330-85c6-4333-b2b4-10c476ea3491/original/manifest.json"
         model: "Violeta"
       - id: "s3://voice-cloning-zero-shot/5694d5e5-2dfe-4440-8cc8-e2a69c3e7560/original/manifest.json"
         model: "Patricia"

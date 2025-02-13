@@ -3,6 +3,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.controllers.tts_controller import router as tts_router
 from app.utils.yaml_loader import YamlLoaderMixin
+from dotenv import load_dotenv
+
+# Cargar variables de entorno al inicio
+load_dotenv()
 
 class AppConfig(YamlLoaderMixin):
     """Configuración de la aplicación.
