@@ -1,4 +1,7 @@
 import mysql.connector
+from typing import List
+from app.models.information_model import information_model
+from app.models.tts_model import TextToSpeechRequestById
 from app.utils.yaml_loader import YamlLoaderMixin
 
 class DBService(YamlLoaderMixin):
@@ -17,8 +20,7 @@ class DBService(YamlLoaderMixin):
             database=db_config['database']
         )
     
-    def save_generated_audio(self, text: str, language: str, gender: str, 
-                           model: str, file_url: str, audio_hash: str) -> bool:
+    def save_generated_audio(self, request:TextToSpeechRequestById, model:information_model, file_url:str, audio_hash:str) -> bool:
         """
         Guarda un registro de audio generado en la base de datos.
         Args:
@@ -31,11 +33,13 @@ class DBService(YamlLoaderMixin):
         Returns:
             bool: True si se guardó correctamente, False en caso contrario
         """
+        text = request.text
+        read_text = request.read
         cursor = self.connection.cursor()
         sql = """INSERT INTO generated_audios 
-                 (input_text, language, gender, model, file_url, audio_hash) 
-                 VALUES (%s, %s, %s, %s, %s, %s)"""
-        values = (text, language, gender, model, file_url, audio_hash)
+                 (original_text, input_text, information_id, file_url, audio_hash) 
+                 VALUES (%s, %s, %s, %s, %s)"""
+        values = (text, read_text, model.id, file_url, audio_hash)
         
         try:
             cursor.execute(sql, values)
@@ -69,7 +73,30 @@ class DBService(YamlLoaderMixin):
             return None
         finally:
             cursor.close()
+
+    def get_models(self) -> List[information_model]:
+        """
+        Obtiene todos los modelos de información de audio disponibles.
+        Returns:
+            List[information_model]: Lista de modelos de información, None si hay error
+        """
+        cursor = self.connection.cursor(dictionary=True)
+        sql = """
+                SELECT * FROM information_audios 
+            """
     
+        try:
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            return [information_model(**row) for row in result]
+    
+        except mysql.connector.Error as err:
+            print(f"Error al buscar en la base de datos: {err}")
+            return None
+        finally:
+            cursor.close()
+
+
     def __del__(self):
         """
         Cierra la conexión a la base de datos cuando se destruye la instancia.

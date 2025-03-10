@@ -1,4 +1,6 @@
 import requests
+from app.models.information_model import information_model
+from app.models.tts_model import TextToSpeechRequestById
 from app.utils.yaml_loader import YamlLoaderMixin
 
 class TTSService(YamlLoaderMixin):
@@ -10,41 +12,37 @@ class TTSService(YamlLoaderMixin):
         api (dict): Configuración de la API cargada desde un archivo YAML.
         file_service (FileService): Servicio para gestionar los archivos de audio.
         db_service (DBService): Una instancia para gestionar la base de datos.
-
     """
 
-    def __init__(self, file_service: 'FileService', s3_service: 'S3Service', db_service: 'DBService'):
+    def __init__(self, file_service: 'FileService', s3_service: 'S3Service', db_service: 'DBService', voices: dict):
         """
         Inicializa la instancia de TTSService.
         Args:
             file_service (FileService): Una instancia para gestionar los archivos generados.
         """
-        self.voices = self.load_yaml('app/data/voices_config.yaml')['voices']
+        self.voices = voices
         self.api = self.load_yaml('config.yaml')['api']
         self.file_service = file_service
         self.s3_service = s3_service
         self.db_service = db_service
 
-    def generate_audio_from_text(self, text, language, gender, model):
+    def generate_audio_from_text(self, request:TextToSpeechRequestById , model:information_model) -> str:
         """
         Genera un archivo de audio a partir de un texto utilizando un modelo de texto a voz.
-        Este método selecciona una voz adecuada basada en el idioma, género y modelo especificados, 
-        y luego genera un archivo de audio con el texto proporcionado.
+        Este método verifica si el audio ya existe en la base de datos y, si no, lo genera
+        utilizando el modelo de voz especificado.
         Args:
-            text (str): El texto que se convertirá en audio.
-            language (str): El idioma del texto (por ejemplo, 'en-US', 'es-ES').
-            gender (str): El género de la voz (por ejemplo, 'M' para masculino, 'F' para femenino).
-            model (str): El identificador del modelo de voz. Si se proporciona, se utiliza este modelo directamente.
+            request (TextToSpeechRequestById): Objeto de solicitud que contiene el texto a procesar.
+            model (information_model): Modelo de información con los detalles de la voz a utilizar.
         Returns:
-            str: La URL o la ruta del archivo de audio generado.
+            str: La URL del archivo de audio generado.
         Raises:
-            ValueError: Si no se encuentra una voz adecuada o ocurre un error durante la generación del audio.
+            ValueError: Si ocurre un error durante la generación del audio.
         """
-        # Selección de la voz usando la configuración del archivo YAML
-        selected_voice = self.select_voice(language, gender, model)
+        read_text = request.read
 
         # Generar el hash del audio
-        audio_hash = self.file_service.generate_hash(text + selected_voice)
+        audio_hash = self.file_service.generate_hash(read_text + model.model)
 
         # Verificar si el audio ya existe en la base de datos
         existing_audio = self.db_service.get_audio_by_hash(audio_hash)
@@ -52,52 +50,24 @@ class TTSService(YamlLoaderMixin):
             return existing_audio['file_url']
         
         # Generar el audio con la voz seleccionada
-        audio_file_url = self.synthesize_audio(text, selected_voice)
+        audio_file_url = self.synthesize_audio(read_text, model.model)
 
         # Guardar el registro en la base de datos usando el servicio
-        self.db_service.save_generated_audio(
-            text=text,
-            language=language,
-            gender=gender,
-            model=model or selected_voice,
+        if not self.db_service.save_generated_audio(
+            request,
+            model,
             file_url=audio_file_url,
             audio_hash=audio_hash
-        )
+        ):
+            raise ValueError("Error: No se pudo guardar el registro de audio en la base de datos")
         
         return audio_file_url
-        
-    def select_voice(self, language, gender, model):
-        """
-        Selecciona una voz para el texto a sintetizar.
-        Si se pasa un modelo específico, se utiliza este. De lo contrario,
-        selecciona una voz basada en el idioma y género desde la configuración.
-        Args:
-            language (str): Idioma de la voz (e.g., 'en-US', 'es-ES').
-            gender (str): Género de la voz (e.g., "M", "F").
-            model (str, optional): ID de un modelo específico. Por defecto, None.
-        Returns:
-            str: ID de la voz seleccionada.
-        Raises:
-            KeyError: Si no se encuentra una voz que coincida con los criterios.
-        """
-        # Si se pasa un modelo específico, lo seleccionamos
-        if model:
-            return model
-        
-        # Si no se pasa un modelo, seleccionamos uno del archivo de configuración
-        try:
-            # Obtener la lista de voces según el idioma y género
-            available_voices = self.voices[language][gender]
-            return available_voices[0]['id']
-        except KeyError:
-            # Si no se encuentra la configuración, devolvemos una voz por defecto
-            return "DefaultVoice"
                 
-    def synthesize_audio(self, text: str, selected_voice:str):
+    def synthesize_audio(self, read_text: str, selected_voice:str) -> str:
         """
         Genera un archivo de audio a partir de un texto dado.
         Args:
-            text (str): Texto a convertir en audio.
+            read_text (str): Texto a convertir en audio.
             selected_voice (str): ID de la voz seleccionada.
         Returns:
             str: Ruta del archivo de audio generado.
@@ -105,19 +75,19 @@ class TTSService(YamlLoaderMixin):
             ValueError: Si la API devuelve un error o falla el proceso de síntesis.
         """
         # Limpiar espacios al inicio y al final
-        text = text.strip()
+        read_text = read_text.strip()
         
-        if not text.endswith('.'):
-            text += '.'
+        if not read_text.endswith('.'):
+            read_text += '.'
 
-        audio_name = text + selected_voice
+        audio_name = read_text + selected_voice
 
         # Generar el hash del texto
         audio_path = self.file_service.get_audio_path(audio_name)
         audio_name = self.file_service.generate_hash(audio_name)
 
         # Construir la solicitud a la API
-        request = self.build_request(text, selected_voice)
+        request = self.build_request(read_text, selected_voice)
 
         try:
             # Llamada a la API de Play.ht
@@ -141,15 +111,15 @@ class TTSService(YamlLoaderMixin):
         except requests.exceptions.RequestException as e:
             raise ValueError(f"Error al llamar a la API: {e}")
         except Exception as e:
-            raise ValueError(f"Error al procesar el texto a audio: {e}")
+            raise ValueError(f"Error al procesar el texto a audio: Tokens agotados")
         
-    def build_request(self, text, selected_voice):
+    def build_request(self, read_text, selected_voice):
         """
         Construye los datos necesarios para realizar una solicitud a la API.
         Este método organiza la URL, los encabezados y el cuerpo de la solicitud
         para interactuar con la API Play.ht.
         Args:
-            text (str): Texto a convertir en audio.
+            read_text (str): Texto a convertir en audio.
             selected_voice (str): ID de la voz seleccionada.
         Returns:
             dict: Diccionario con la URL, encabezados y el cuerpo de la solicitud.
@@ -166,7 +136,7 @@ class TTSService(YamlLoaderMixin):
             "voice_engine": self.api['defaults']['voice_engine'],
             "output_format": self.api['defaults']['output_format'],
             "speed": self.api['defaults']['speed'],
-            "text": text,
+            "text": read_text,
             "voice": selected_voice
         }
         return request
