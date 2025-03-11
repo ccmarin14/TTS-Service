@@ -1,6 +1,6 @@
-from typing import Dict, List
+from typing import Dict
 from fastapi import APIRouter, HTTPException
-from app.models.information_model import information_model
+from app.models.information_model import CreateVoiceModel, InformationModel
 from app.models.tts_model import TextToSpeechRequestById, TextToSpeechRequestByName, TextToSpeechRequestOptional
 from app.services.container_service import ServiceContainer
 from app.services.database.query_service import QueryService
@@ -113,11 +113,55 @@ async def create_tts_by_id(model_id: int, request: TextToSpeechRequestById) -> d
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.post("/models/")
+async def create_voice_model(voice_model: CreateVoiceModel) -> Dict:
+    """
+    Crea un nuevo modelo de voz.
+    Args:
+        voice_model (CreateVoiceModel): Datos del nuevo modelo de voz
+    Returns:
+        Dict: Datos del modelo creado
+    Raises:
+        HTTPException: 
+            - 422 Si los datos son inválidos
+            - 500 Si hay un error al crear el modelo
+    """
+    try:
+        # Validar que no exista un modelo con el mismo nombre
+        existing_model = next(
+            (m for m in voices if m.voice_name == voice_model.voice_name), 
+            None
+        )
+        
+        if existing_model:
+            raise ValueError(f"Ya existe un modelo con el nombre: {voice_model.voice_name}")
+
+        # Crear el nuevo modelo
+        new_model = service_container.db_service.save_voice_model(voice_model)
+        if not new_model:
+            raise ValueError("No se pudo crear el modelo")
+
+        # Actualizar la lista de voces en memoria
+        voices.append(new_model)
+
+        return {
+            "message": "Modelo creado correctamente",
+            "model": new_model
+        }
+
+    except ValueError as ve:
+        raise HTTPException(status_code=422, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error al crear el modelo: {str(e)}"
+        )
+
 @router.get("/models/")
 async def get_all_models() -> Dict:
     """Obtiene todos los modelos de voz disponibles.
     Returns:
-        List[information_model]: Lista de modelos de voz disponibles.
+        List[InformationModel]: Lista de modelos de voz disponibles.
     Raises:
         HTTPException: Si ocurre un error al recuperar los modelos.
     """

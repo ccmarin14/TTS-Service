@@ -1,6 +1,6 @@
 import mysql.connector
 from typing import List
-from app.models.information_model import information_model
+from app.models.information_model import CreateVoiceModel, InformationModel
 from app.models.tts_model import TextToSpeechRequestById
 from app.utils.yaml_loader import YamlLoaderMixin
 
@@ -17,10 +17,48 @@ class DBService(YamlLoaderMixin):
             host=db_config['host'],
             user=db_config['user'],
             password=db_config['password'],
-            database=db_config['database']
+            database=db_config['database'],
         )
+
+    def save_voice_model(self, voice_model:CreateVoiceModel) -> CreateVoiceModel:
+        """
+        Guarda un nuevo modelo de voz en la base de datos.
+        Args:
+            voice_model (InformationModel): Datos del nuevo modelo de voz
+        Returns:
+            InformationModel: Modelo creado con su ID si fue exitoso, None si hubo error
+        """
+        cursor = self.connection.cursor(dictionary=True)
+        sql = """INSERT INTO information_audios 
+                 (voice_name, language, gender, type, platform, model) 
+                 VALUES (%s, %s, %s, %s, %s, %s)"""
+        values = (
+            voice_model.voice_name,
+            voice_model.language,
+            voice_model.gender,
+            voice_model.type,
+            voice_model.platform,
+            voice_model.model
+        )
+        
+        try:
+            cursor.execute(sql, values)
+            self.connection.commit()
+            
+            # Obtener el modelo recién creado
+            new_id = cursor.lastrowid
+            cursor.execute("SELECT * FROM information_audios WHERE id = %s", (new_id,))
+            result = cursor.fetchone()
+            
+            return CreateVoiceModel(**result) if result else None
+            
+        except mysql.connector.Error as err:
+            print(f"Error al guardar el modelo en la base de datos: {err}")
+            return None
+        finally:
+            cursor.close()
     
-    def save_generated_audio(self, request:TextToSpeechRequestById, model:information_model, file_url:str, audio_hash:str) -> bool:
+    def save_generated_audio(self, request:TextToSpeechRequestById, model:InformationModel, file_url:str, audio_hash:str) -> bool:
         """
         Guarda un registro de audio generado en la base de datos.
         Args:
@@ -74,11 +112,11 @@ class DBService(YamlLoaderMixin):
         finally:
             cursor.close()
 
-    def get_models(self) -> List[information_model]:
+    def get_models(self) -> List[InformationModel]:
         """
         Obtiene todos los modelos de información de audio disponibles.
         Returns:
-            List[information_model]: Lista de modelos de información, None si hay error
+            List[InformationModel]: Lista de modelos de información, None si hay error
         """
         cursor = self.connection.cursor(dictionary=True)
         sql = """
@@ -88,7 +126,7 @@ class DBService(YamlLoaderMixin):
         try:
             cursor.execute(sql)
             result = cursor.fetchall()
-            return [information_model(**row) for row in result]
+            return [InformationModel(**row) for row in result]
     
         except mysql.connector.Error as err:
             print(f"Error al buscar en la base de datos: {err}")

@@ -1,17 +1,17 @@
 from typing import Dict, List
-from app.models.information_model import information_model
+from app.models.information_model import InformationModel
 from collections import defaultdict
 
 class QueryService:
     """Servicio para organizar y estructurar resultados de consultas SQL"""
 
     @staticmethod
-    def organize_voice_models(voices: List[information_model]) -> Dict:
+    def organize_voice_models(voices: List[InformationModel]) -> Dict:
         """
         Organiza los modelos de voz jerárquicamente por platform -> language -> type -> gender
         
         Args:
-            voices (List[information_model]): Lista de modelos de voz
+            voices (List[InformationModel]): Lista de modelos de voz
 
         Returns:
             Dict: Estructura jerárquica organizada de los modelos

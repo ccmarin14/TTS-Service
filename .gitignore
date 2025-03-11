@@ -8,7 +8,7 @@
 cron.log
 
 # ignore environment directory
-tts
+tts-env
 
 # ignore resources files
 app/resources/*

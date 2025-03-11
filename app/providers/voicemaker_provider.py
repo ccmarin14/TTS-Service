@@ -1,10 +1,10 @@
 import requests
 
-from app.models.information_model import information_model
+from app.models.information_model import InformationModel
 from .base_provider import TTSProvider
 
 class VoicemakerProvider(TTSProvider):
-    def build_request(self, text: str, model: information_model) -> dict:
+    def build_request(self, text:str, model:InformationModel) -> dict:
         voice_id = model.model
 
         return {
