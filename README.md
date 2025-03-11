@@ -6,11 +6,11 @@
 
 ## Descripción
 
-Servicio API REST construido con FastAPI que convierte texto a voz utilizando el servicio Play.ht. El sistema implementa cacheo de audios, almacenamiento en AWS S3 y registro en base de datos MySQL.
+Servicio API REST construido con FastAPI que convierte texto a voz utilizando el servicios en linea. El sistema implementa cacheo de audios, almacenamiento en AWS S3 y registro en base de datos MySQL.
 
 ## Características Principales
 
--   Conversión de texto a voz mediante Play.ht API
+-   Conversión de texto a voz mediante TTS online
 -   Soporte multiidioma (Inglés y Español)
 -   Voces masculinas y femeninas
 -   Almacenamiento en AWS S3
@@ -23,6 +23,7 @@ Servicio API REST construido con FastAPI que convierte texto a voz utilizando
 -   MySQL
 -   Cuenta AWS (S3)
 -   Cuenta Play.ht
+-   Cuenta Voicemaker.in
 
 ## Instalación y Uso
 
@@ -31,8 +32,9 @@ Servicio API REST construido con FastAPI que convierte texto a voz utilizando
 1. Crea un archivo .env con las siguientes variables (o descarga el ejemplo):
 ```.env
 # API Credentials
-API_USER_ID=your_user_id
-API_AUTH_TOKEN=your_auth_token
+VOICEMAKER_BEARER=Bearer xxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+PLAYHT_API_USER_ID=your_user_id
+PLAYHT_API_AUTH_TOKEN=your_auth_token
 
 # AWS Credentials
 AWS_ACCESS_KEY=your_access_key
@@ -45,7 +47,7 @@ AWS_URL=your_s3_url
 DB_HOST=your_host
 DB_USER=your_user
 DB_PASSWORD=your_password
-DB_NAME=your_database
+DB_NAME=your_database 
 
 # CORS Settings (comma-separated URLs)
 CORS_ORIGINS=["http://localhost:3000","http://localhost:5500","http://127.0.0.1:5500"]
@@ -55,14 +57,23 @@ CORS_ORIGINS=["http://localhost:3000","http://localhost:5500","http://127.0.0.1:
 ```sql
 CREATE TABLE generated_audios (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    original_text TEXT,
     input_text TEXT NOT NULL,
-    language VARCHAR(50) NOT NULL,
-    gender CHAR(1) NOT NULL,
-    model VARCHAR(100) NOT NULL,
+    information_id INT DEFAULT NULL,
     file_url VARCHAR(255) NOT NULL,
     audio_hash VARCHAR(64) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE information_audios (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  voice_name VARCHAR(255) NOT NULL,
+  `language` VARCHAR(45) NOT NULL,
+  gender ENUM('M','F') NOT NULL,
+  `type` ENUM('robot','adult','child') NOT NULL,
+  platform VARCHAR(45) DEFAULT NULL,
+  model VARCHAR(500) NOT NULL,  
+)
 ```
 
 3. Puedes ejecutar el servicio de dos formas:
@@ -109,83 +120,208 @@ docker-compose up -d
 ```
 
 ## Estructura del Proyecto
-
 ```
 /TTS-Service
 ├── app/
-│   ├── controllers/
-│   │  └── tts_controller.py    # Endpoints de la API
-│   ├── models/
-│   │  └── tts_model.py        # Modelos de datos
-│   ├── services/
-│   │  ├── tts_service.py      # Lógica principal de TTS
-│   │  ├── file_service.py     # Gestión de archivos
-│   │  ├── s3_service.py       # Integración con AWS S3
-│   │  └── db_service.py       # Operaciones con MySQL
-│   ├── data/
-│   │  └── voices_config.yaml  # Configuración de voces
-│   └── main.py                 # Inicialización de FastAPI
-├── config.yaml                 # Configuración general
-└── requirements.txt           # Dependencias del proyecto
+│   ├── controllers/
+│   │   └── tts_controller.py     # Endpoints de la API
+│   ├── models/
+│   │   ├── tts_model.py          # Modelos para requests TTS
+│   │   └── information_model.py  # Modelos para voces
+│   ├── providers/                # Proveedores TTS
+│   │   ├── base.py               # Clase base para providers
+│   │   ├── playht.py             # Proveedor Play.ht
+│   │   ├── polly.py              # Proveedor Amazon Polly
+│   │   └── voicemaker.py         # Proveedor Voicemaker
+│   ├── resources/                # Recursos
+│   │   └── audios                # Carpeta temporal de audios
+│   ├── services/
+│   │   ├── container_service.py  # Contenedor de servicios
+│   │   ├── database/
+│   │   │   ├── db_service.py     # Operaciones con MySQL
+│   │   │   └── query_service.py  # Organizador de consultas
+│   │   ├── storage/
+│   │   │   ├── file_service.py   # Gestión de archivos
+│   │   │   └── s3_service.py     # Integración con AWS S3
+│   │   ├── tts/
+│   │   │   └── tts_service.py    # Servicio principal TTS
+│   │   └── container_service.py  # Servicio para agrupar los servicios
+│   ├── utils/
+│   │   └── yaml_loader.py        # Utilidad para YAML
+│   ├── validators/
+│   │   └── tts_validator.py      # Validación de requests
+│   ├── main.py                   # Inicialización de FastAPI
+│   └── static_files.py           # Montaje de la carpeta de recursos
+├── config.yaml                   # Configuración general
+└── requirements.txt              # Dependencias del proyecto
 ```
 
 ## Uso de la API
-
 ### Convertir Texto a Voz
 
+## Uso de la API
+
+### 1. Convertir Texto a Voz por Nombre
 ```bash
-POST /tts/
+POST /tts/by-name/
 ```
-
-### Payload:
-
+#### Payload:
 ```json
 {
-  "text": "Texto a convertir",
-  "language": "es-ES",
-  "gender": "F",
-  "model": "Carmen"
+  "text": "Texto original a convertir",
+  "read": "Texto que se leerá",
+  "language": "es-ES",
+  "model": "Carmen"
 }
 ```
 
-### Respuesta:
-
+### 2. Convertir Texto a Voz por ID
+```bash
+POST /tts/{model_id}
+```
+#### Payload:
 ```json
 {
-  "message": "Audio synthesized successfully",
-  "audio_path": "https://tu-bucket.s3.amazonaws.com/audios/hash.mp3"
+  "text": "Texto original a convertir",
+  "read": "Texto que se leerá"
 }
 ```
 
-### Obtener Modelos Disponibles
-
+### 3. Convertir Texto con Parámetros Opcionales
 ```bash
-GET /models/
+POST /tts/optional/
+```
+#### Payload:
+```json
+{
+  "text": "Texto original a convertir",
+  "read": "Texto que se leerá",
+  "language": "es-ES",
+  "gender": "F",
+  "type": "adult"
+}
+```
+
+### 4. Crear Nuevo Modelo de Voz
+```bash
+POST /models/
+```
+#### Payload:
+```json
+{
+  "voice_name": "Nueva Voz",
+  "language": "es-ES",
+  "gender": "F",
+  "type": "adult",
+  "platform": "polly",
+  "model": "Lucia"
+}
+```
+
+### 5. Obtener Modelos Disponibles
+```bash
+GET /models/
+```
+#### Respuesta:
+```json
+{
+  "playht": {
+    "es-ES": {
+      "adult": {
+        "F": [
+          {
+            "id": 1,
+            "voice_name": "Carmen",
+            "model": "s3://voice-cloning-zero-shot/d9ff78ba-d016"
+          }
+        ]
+      }
+    }
+  },
+  "polly": {
+    "es-ES": {
+      "adult": {
+        "F": [
+          {
+            "id": 2,
+            "voice_name": "Lucia",
+            "model": "Lucia"
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+### Respuesta Exitosa (para endpoints TTS):
+```json
+{
+  "message": "Audio sintentizado correctamente",
+  "audio_path": "https://tu-bucket.s3.amazonaws.com/audios/hash.mp3"
+}
+```
+
+### Errores Comunes:
+```json
+{
+  "detail": "Información no encontrada para el lenguage:'es-ES' y para el nombre del modelo:'ModeloX'"
+}
+```
+
+```json
+{
+  "detail": "El campo texto no puede estar vacío"
+}
+```
+
+```json
+{
+  "detail": "Ya existe un modelo con el nombre: NuevaVoz"
+}
 ```
 
 ## Flujo de la aplicación
 ```mermaid
 graph TD
-    A[Cliente] -->|POST /tts/| B[TTSController]
-    B -->|Verifica hash| C[DBService]
-    C -->|Si existe| D[Retorna URL existente]
-    C -->|Si no existe| E[TTSService]
-    E -->|Selecciona voz| G[Configuración YAML]
-    G -->|Genera audio| H[Play.ht API]
-    H -->|Audio generado| I[FileService]
-    I -->|Archivo temporal| J[S3Service]
-    J -->|Sube archivo| K[AWS S3]
-    K -->|Obtiene URL| L[DBService]
-    L -->|Guarda metadata| M[MySQL]
-    M -->|URL del audio| N[Respuesta al cliente]
-    D -->M
+    %% Flujo común para sintetizar audio
+    A[Cliente] -->|POST| B[TTSController]
+    B -->|Valida request| C[TTSValidator]
+    C -->|Verifica cache| D[DBService]
+    D -->|Si existe| E[Retorna URL existente]
+    D -->|Si no existe| F[TTSService]
+    F -->|Selecciona provider| G{Provider Type}
+    G -->|PlayHT| H[PlayHT Provider]
+    G -->|Polly| I[Polly Provider]
+    G -->|Voicemaker| J[Voicemaker Provider]
+    H & I & J -->|Audio generado| K[FileService]
+    K -->|Archivo temporal| L[S3Service]
+    L -->|Sube archivo| M[AWS S3]
+    M -->|Obtiene URL| N[DBService]
+    N -->|Guarda metadata| O[MySQL]
+    O -->|URL del audio| P[Cliente]
+    E -->P
+
+    %% Flujo para obtener modelos
+    Q[Cliente] -->|GET /models| R[TTSController]
+    R -->|Obtiene modelos| S[DBService]
+    S -->|Lista de modelos| T[Cliente]
+
+    %% Flujo para crear modelo
+    U[Cliente] -->|POST /models| V[TTSController]
+    V -->|Verifica duplicado| W[DBService]
+    W -->|Si no existe| X[DBService Save]
+    X -->|Modelo creado| Y[Cliente]
+    W -->|Si existe| Z[Error Duplicado]
+    Z -->Y
 ```
 
 ## Versiones Disponibles
 
 - `latest`: Última versión estable
 - `1.0.0`: Primera versión estable
-- `1.0.0-alpine`: Versión ligera basada en Alpine Linux
+- `2.0.0`: Segunda versión estable que permite trabajar con multiples TTS en línea
+
 
 ## Mantenimiento
 
