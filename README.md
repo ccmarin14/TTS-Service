@@ -73,7 +73,7 @@ CREATE TABLE information_audios (
   `type` ENUM('robot','adult','child') NOT NULL,
   platform VARCHAR(45) DEFAULT NULL,
   model VARCHAR(500) NOT NULL,  
-)
+);
 ```
 
 3. Puedes ejecutar el servicio de dos formas:
@@ -317,16 +317,12 @@ graph TD
 ```
 
 ## Versiones Disponibles
-
 - `latest`: Última versión estable
 - `1.0.0`: Primera versión estable
 - `2.0.0`: Segunda versión estable que permite trabajar con multiples TTS en línea
 
-
 ## Mantenimiento
-
 ### Actualización de la Imagen
-
 Para actualizar a la última versión:
 ```bash
 docker pull cristianmaringma/tts-service:latest
@@ -346,11 +342,10 @@ docker stats tts-service
 -   ReDoc: http://localhost:8000/redoc
 
 ## Soporte
-
 Si encuentras algún problema o tienes alguna sugerencia, por favor:
 1. Revisa los issues existentes en GitHub
 2. Abre un nuevo issue si es necesario
 3. Contacta al equipo de mantenimiento
 
 ## Licencia
-©2024, GMA Digital - Todos los derechos reservados.
+©2025, GMA Digital - Todos los derechos reservados.
