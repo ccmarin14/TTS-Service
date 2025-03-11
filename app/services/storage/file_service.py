@@ -20,7 +20,8 @@ class FileService:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)  # Crear directorio si no existe
 
-    def generate_hash(self, text: str) -> str:
+    @staticmethod
+    def generate_hash(text: str) -> str:
         """
         Genera un hash único basado en el texto proporcionado.
 
@@ -46,13 +47,3 @@ class FileService:
         """
         text_hash = self.generate_hash(text)
         return self.output_dir / f"{text_hash}.mp3"
-
-    def audio_exists(self, text: str) -> bool:
-        """
-        Verifica si el archivo de audio ya existe en el sistema de archivos.
-        Args:
-            text (str): El texto base para buscar el archivo de audio correspondiente.
-        Returns:
-            bool: `True` si el archivo existe, `False` en caso contrario.
-        """
-        return self.get_audio_path(text).exists()

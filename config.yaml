@@ -27,3 +27,28 @@ db:
     user: ${DB_USER}
     password: ${DB_PASSWORD}
     database: ${DB_NAME}
+
+tts_providers:
+  playht:
+    url: "https://api.play.ht/api/v2/tts/stream"
+    headers:
+      Content-Type: "application/json"
+      accept: "audio/mpeg"
+    credentials:
+      X-USER-ID: ${API_USER_ID}
+      AUTHORIZATION: ${API_AUTH_TOKEN}
+    defaults:
+      voice_engine: "Play3.0-mini"
+      output_format: "mp3"
+      speed: 0.96
+
+  polly:
+    access_key_id: ${AWS_ACCESS_KEY}
+    secret_access_key: ${AWS_SECRET_KEY}
+    region: ${AWS_REGION}
+    output_format: "mp3"
+
+  voicemaker:
+    url: "https://developer.voicemaker.in/voice/api"
+    api_key: ${VOICEMAKER_API_KEY}
+    output_format: "mp3"

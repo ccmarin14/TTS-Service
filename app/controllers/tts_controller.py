@@ -1,13 +1,11 @@
 from typing import List
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException
 from app.models.information_model import information_model
 from app.models.tts_model import TextToSpeechRequestById, TextToSpeechRequestByName, TextToSpeechRequestOptional
-from app.services.tts_service import TTSService
-from app.services.file_service import FileService
-from app.services.s3_service import S3Service
-from app.services.db_service import DBService
-from ..utils.yaml_loader import YamlLoaderMixin
+from app.services.container_service import ServiceContainer
+from app.services.tts.tts_service import TTSService
 from app.validators.tts_validator import TTSValidator
+from ..utils.yaml_loader import YamlLoaderMixin
 
 class AppConfig(YamlLoaderMixin):
     """Clase para cargar la configuración de voces desde un archivo YAML.
@@ -22,12 +20,18 @@ db_config = app_config.load_yaml('config.yaml')['db']['mysql']
 output_dir = "app/resources/audios"
 router = APIRouter()
 
-file_service = FileService(output_dir)
-s3_service = S3Service(aws_config)
-db_service = DBService(db_config)
-voices = db_service.get_models()
+# Crear el contenedor de servicios
+service_container = ServiceContainer(
+    output_dir=output_dir,
+    aws_config=aws_config,
+    db_config=db_config
+)
 
-tts_service = TTSService(file_service, s3_service, db_service, voices)
+# Obtener el listado de los modelos
+voices = service_container.db_service.get_models()
+
+# Crear el servicio TTS usando el contenedor
+tts_service = TTSService(service_container, voices)
 tts_validator = TTSValidator()
 
 @router.post("/tts/by-name/")
