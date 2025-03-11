@@ -1,5 +1,5 @@
 from app.services.storage.file_service import FileService
-from app.services.tts.s3_service import S3Service
+from app.services.storage.s3_service import S3Service
 from app.services.database.db_service import DBService
 
 class ServiceContainer:

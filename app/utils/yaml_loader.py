@@ -33,4 +33,3 @@ class YamlLoaderMixin:
                 return yaml.safe_load(yaml_content)
         except Exception as e:
             raise FileNotFoundError(f"Error al cargar el archivo YAML {file_path}: {e}")
-    # ...existing code...

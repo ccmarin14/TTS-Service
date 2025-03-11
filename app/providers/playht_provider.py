@@ -22,11 +22,10 @@ class PlayHTProvider(TTSProvider):
 
     def execute_request(self, request: dict) -> bytes:
         response = requests.post(
-            request['url'], 
-            headers=request['headers'], 
+            request['url'],
             json=request['payload'], 
-            stream=True
+            headers=request['headers'],
         )
         if response.status_code != 200:
             raise ValueError(f"Error al llamar a la API: {response.text}")
-        return b''.join(response.iter_content(chunk_size=8192))
+        return response

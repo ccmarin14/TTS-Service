@@ -11,6 +11,7 @@ class PollyProvider(TTSProvider):
             region_name=config['region']
         )
 
+    #Código sin probar
     def build_request(self, text: str, voice_id: str) -> dict:
         return {
             'Text': text,
@@ -18,6 +19,7 @@ class PollyProvider(TTSProvider):
             'VoiceId': voice_id,
             'Engine': 'neural'
         }
-
-    def process_response(self, response):
+    
+    #Código sin probar
+    def execute_request(self, response):
         return response['AudioStream'].read()

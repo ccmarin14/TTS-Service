@@ -96,7 +96,6 @@ class DBService(YamlLoaderMixin):
         finally:
             cursor.close()
 
-
     def __del__(self):
         """
         Cierra la conexión a la base de datos cuando se destruye la instancia.
