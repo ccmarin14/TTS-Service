@@ -11,6 +11,6 @@ class TTSProvider(ABC):
         pass
 
     @abstractmethod
-    def process_response(self, response: Any) -> bytes:
-        """Procesa la respuesta del proveedor"""
+    def execute_request(self, request: Dict[str, Any]) -> bytes:
+        """Ejecuta la solicitud y retorna el audio en bytes"""
         pass

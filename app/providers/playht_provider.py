@@ -1,3 +1,4 @@
+import requests
 from .base_provider import TTSProvider
 
 class PlayHTProvider(TTSProvider):
@@ -19,5 +20,13 @@ class PlayHTProvider(TTSProvider):
             }
         }
 
-    def process_response(self, response):
+    def execute_request(self, request: dict) -> bytes:
+        response = requests.post(
+            request['url'], 
+            headers=request['headers'], 
+            json=request['payload'], 
+            stream=True
+        )
+        if response.status_code != 200:
+            raise ValueError(f"Error al llamar a la API: {response.text}")
         return b''.join(response.iter_content(chunk_size=8192))
