@@ -122,7 +122,6 @@ class DBService(YamlLoaderMixin):
         sql = """
                 SELECT * FROM information_audios 
             """
-    
         try:
             cursor.execute(sql)
             result = cursor.fetchall()

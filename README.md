@@ -138,8 +138,7 @@ docker-compose up -d
 │   ├── services/
 │   │   ├── container_service.py  # Contenedor de servicios
 │   │   ├── database/
-│   │   │   ├── db_service.py     # Operaciones con MySQL
-│   │   │   └── query_service.py  # Organizador de consultas
+│   │   │   └── db_service.py     # Operaciones con MySQL
 │   │   ├── storage/
 │   │   │   ├── file_service.py   # Gestión de archivos
 │   │   │   └── s3_service.py     # Integración con AWS S3

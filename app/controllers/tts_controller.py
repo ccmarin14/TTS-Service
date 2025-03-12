@@ -1,9 +1,8 @@
-from typing import Dict
+from typing import Dict, List
 from fastapi import APIRouter, HTTPException
 from app.models.information_model import CreateVoiceModel, InformationModel
 from app.models.tts_model import TextToSpeechRequestById, TextToSpeechRequestByName, TextToSpeechRequestOptional
 from app.services.container_service import ServiceContainer
-from app.services.database.query_service import QueryService
 from app.services.tts.tts_service import TTSService
 from app.validators.tts_validator import TTSValidator
 from ..utils.yaml_loader import YamlLoaderMixin
@@ -158,7 +157,7 @@ async def create_voice_model(voice_model: CreateVoiceModel) -> Dict:
         )
 
 @router.get("/models/")
-async def get_all_models() -> Dict:
+async def get_all_models() -> List[InformationModel]:
     """Obtiene todos los modelos de voz disponibles.
     Returns:
         List[InformationModel]: Lista de modelos de voz disponibles.
@@ -166,6 +165,6 @@ async def get_all_models() -> Dict:
         HTTPException: Si ocurre un error al recuperar los modelos.
     """
     try:
-        return QueryService.organize_voice_models(voices)
+        return voices
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error al cargar los modelos")
