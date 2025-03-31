@@ -21,11 +21,12 @@ class VoicemakerProvider(TTSProvider):
                 "VoiceId": voice_id,
                 "LanguageCode": model.language,
                 "Text": text,
-                "ResponseType": "stream"
+                "ResponseType": "stream",
+                **model.metadata,
             }
         }
 
-    def execute_request(self, request: dict) -> bytes:
+    def execute_request(self, request: dict) -> bytes:        
         response = requests.post(
             request['url'], 
             headers=request['headers'], 

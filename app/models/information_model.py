@@ -8,6 +8,7 @@ class CreateVoiceModel(BaseModel):
     type: str
     platform: str
     model: str
+    metadata: Optional[dict] = None
 
     #Define como se imprime el objeto
     def __repr__(self):

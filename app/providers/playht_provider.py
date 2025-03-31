@@ -1,8 +1,12 @@
 import requests
+
+from app.models.information_model import InformationModel
 from .base_provider import TTSProvider
 
 class PlayHTProvider(TTSProvider):
-    def build_request(self, text: str, voice_id: str) -> dict:
+    def build_request(self, text: str, model:InformationModel) -> dict:
+        voice_id = model.model
+
         return {
             'url': self.config['url'],
             'headers': {

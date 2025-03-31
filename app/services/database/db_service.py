@@ -1,3 +1,4 @@
+import json
 import mysql.connector
 from typing import List
 from app.models.information_model import CreateVoiceModel, InformationModel
@@ -121,11 +122,22 @@ class DBService(YamlLoaderMixin):
         cursor = self.connection.cursor(dictionary=True)
         sql = """
                 SELECT * FROM information_audios 
-            """
+            """           
         try:
             cursor.execute(sql)
             result = cursor.fetchall()
-            return [InformationModel(**row) for row in result]
+
+            # Process metadata field for each row
+            processed_rows = []
+            for row in result:
+                if row.get('metadata') and isinstance(row['metadata'], str):
+                    try:
+                        row['metadata'] = json.loads(row['metadata'])
+                    except json.JSONDecodeError:
+                        pass
+                processed_rows.append(row)
+                
+            return [InformationModel(**row) for row in processed_rows]
     
         except mysql.connector.Error as err:
             print(f"Error al buscar en la base de datos: {err}")
