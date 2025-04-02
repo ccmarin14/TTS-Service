@@ -7,23 +7,28 @@ class VoicemakerProvider(TTSProvider):
     def build_request(self, text:str, model:InformationModel) -> dict:
         voice_id = model.model
 
+        payload = {
+            "Engine": self.config['defaults']['voice_engine'],
+            "OutputFormat": self.config['defaults']['output_format'],
+            "MasterSpeed": self.config['defaults']['speed'],
+            "SampleRate": self.config['defaults']['rate'],
+            "VoiceId": voice_id,
+            "LanguageCode": model.language,
+            "Text": text,
+            "ResponseType": "stream"
+        }
+        
+        if hasattr(model, 'metadata') and model.metadata:
+            for key, value in model.metadata.items():
+                payload[key] = value
+            
         return {
             'url': self.config['url'],
             'headers': {
-                "Content-Type": self.config['headers']['Content-Type'],
-                "AUTHORIZATION": self.config['credentials']['AUTHORIZATION'],
+            "Content-Type": self.config['headers']['Content-Type'],
+            "AUTHORIZATION": self.config['credentials']['AUTHORIZATION'],
             },
-            'payload': {
-                "Engine": self.config['defaults']['voice_engine'],
-                "OutputFormat": self.config['defaults']['output_format'],
-                "MasterSpeed": self.config['defaults']['speed'],
-                "SampleRate": self.config['defaults']['rate'],
-                "VoiceId": voice_id,
-                "LanguageCode": model.language,
-                "Text": text,
-                "ResponseType": "stream",
-                **model.metadata,
-            }
+            'payload': payload
         }
 
     def execute_request(self, request: dict) -> bytes:        
