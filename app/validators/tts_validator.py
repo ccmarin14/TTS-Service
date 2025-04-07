@@ -3,8 +3,6 @@ from app.models.tts_model import (
     TextToSpeechRequestById,
     TextToSpeechRequestByName,
     TextToSpeechRequestOptional,
-    Gender,
-    VoiceType
 )
 
 class TTSValidator:

@@ -7,3 +7,4 @@ boto3
 mysql-connector-python
 requests
 python-dotenv
+python-multipart
