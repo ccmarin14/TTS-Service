@@ -2,6 +2,7 @@
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/cristianmaringma/tts-service?style=flat-square)
 ![Docker Image Size](https://img.shields.io/docker/image-size/cristianmaringma/tts-service)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/ccmarin14/tts-service)
 
 ## Descripción
 
@@ -104,7 +105,7 @@ docker-compose up -d
 
 1. Clona el repositorio:
 ```bash
-git clone https://gl.master2000.net/cristianmarin/TTS-Service
+git clone https://github.com/ccmarin14/TTS-Service.git
 ```
 
 2. Crea y configura tu archivo .env:
@@ -572,6 +573,3 @@ Si encuentras algún problema o tienes alguna sugerencia, por favor:
 1. Revisa los issues existentes en GitHub
 2. Abre un nuevo issue si es necesario
 3. Contacta al equipo de mantenimiento
-
-## Licencia
-©2025, GMA Digital - Todos los derechos reservados.
