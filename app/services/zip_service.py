@@ -17,9 +17,10 @@ class ZipService:
 
         Args:
             zip (UploadFile): Archivo zip.
-
         Returns:
             bool: True si el archivo es un ZIP válido, en caso contrario lanza una excepción ValueError
+        Raises:
+            ValueError: Si el archivo no es un ZIP válido o si contiene archivos con extensiones no permitidas.
         """
         try:
             # Leer el contenido del archivo
@@ -47,24 +48,18 @@ class ZipService:
         except zipfile.BadZipFile:
             raise ValueError("El archivo no es un ZIP válido")
         
-    # async def extract_zip(self, zip: UploadFile) -> List[str]:
-    #     try:
-    #         os.makedirs(self.UPLOAD_DIR, exist_ok=True)
-
-    #         content = await zip.read()
-    #         zip_bytes = io.BytesIO(content)
-
-    #         extracted_files = []
-    #         with zipfile.ZipFile(zip_bytes) as zip_ref:
-    #             zip_ref.extractall(self.UPLOAD_DIR)
-    #             extracted_files = zip_ref.namelist()
-
-    #             return extracted_files
-
-    #     except Exception as e:
-    #         raise ValueError(f"Error al extraer el ZIP: {str(e)}")
-        
     async def extract_zip(self, zip:UploadFile, model:InformationModel) -> List[str]:
+        """
+        Extrae los archivos de un ZIP y los renombra según el modelo de voz.
+
+        Args:
+            zip (UploadFile): Archivo ZIP a extraer.
+            model (InformationModel): Modelo de voz para renombrar los archivos.
+        Returns:
+            List[str]: Lista de nombres de archivos extraídos.
+        Raises:
+            ValueError: Si hay un error al extraer el ZIP o si no se encuentra el modelo.
+        """
         try:
             os.makedirs(self.UPLOAD_DIR, exist_ok=True)
 
@@ -85,7 +80,6 @@ class ZipService:
                             target.write(content)
 
                 return renamed_files
-                # return [os.path.join(self.UPLOAD_DIR, file_name) for file_name in extracted_files]
 
         except Exception as e:
             raise ValueError(f"Error al extraer el ZIP: {str(e)}")
@@ -97,11 +91,9 @@ class ZipService:
         Args:
             file_list (List[str]): Lista de nombres originales
             model (InformationModel): Modelo para nombrar los archivos
-            
         Returns:
             Dict[str, str]: Diccionario con {nombre_original: nuevo_nombre}
         """
-
         renamed_files = {}
         for original_name in file_list:
             filename, ext = os.path.splitext(original_name)

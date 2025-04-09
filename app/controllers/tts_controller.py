@@ -113,6 +113,45 @@ async def create_tts_by_id(model_id: int, request: TextToSpeechRequestById) -> d
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.post("/tts/upload-zip/{model_id}")
+async def upload_zip_model(model_id: int, file: UploadFile) -> Dict:
+    """Carga un archivo ZIP y lo procesa para el modelo de voz especificado.
+    Args:
+        model_id (int): ID del modelo de voz a utilizar
+        file (UploadFile): Archivo ZIP a cargar
+    Returns:
+        Dict: Mensaje de éxito y lista de archivos extraídos
+    Raises:
+        HTTPException: 
+            - 422 Si el archivo ZIP no es válido
+            - 404 Si el modelo especificado no existe
+            - 500 Si hubo un error al procesar el archivo ZIP
+    """
+    try:
+        # Validar que el modelo exista
+        model = next((m for m in voices if m.id == model_id), None)
+        if not model:
+            raise HTTPException(status_code=404, detail=f"Modelo con el id:{model_id} no encontrado")
+
+        zip_service = ZipService()
+        
+        # Validar el archivo zip
+        await zip_service.validate_zip_file(file)
+
+        # Extraer archivos
+        files = await zip_service.extract_zip(file, model)
+
+        tts_service.save_files(files, model, zip_service.UPLOAD_DIR)
+
+        return {
+            "message": "Archivo zip cargado correctamente",
+            "extracted_files": files,
+        }
+    except ValueError as ve:
+        raise HTTPException(status_code=422, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 @router.post("/models/")
 async def create_voice_model(voice_model: CreateVoiceModel) -> Dict:
     """
@@ -170,51 +209,3 @@ async def get_all_models() -> List[InformationModel]:
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error al cargar los modelos")
 
-#endpoint para cargar un zip, y el id de un modelo de voz
-@router.post("/models/upload-zip/")
-async def upload_zip_model(model_id: int, file: UploadFile) -> Dict:
-    """Carga un archivo zip y lo asocia a un modelo de voz.
-    Args:
-        model_id (int): ID del modelo de voz
-        file (bytes): Contenido del archivo zip
-    Returns:
-        Dict: Mensaje de éxito o error
-    Raises:
-        HTTPException: 
-            - 422 Si los datos son inválidos
-            - 500 Si hay un error al cargar el archivo zip
-    """
-    try:
-        # Validar que el modelo exista
-        model = next((m for m in voices if m.id == model_id), None)
-        if not model:
-            raise HTTPException(status_code=404, detail=f"Modelo con el id:{model_id} no encontrado")
-
-        zip_service = ZipService()
-        
-        # Validar el archivo zip
-        await zip_service.validate_zip_file(file)
-
-        # Extraer archivos
-        files = await zip_service.extract_zip(file, model)
-
-        tts_service.save_files(files, model, zip_service.UPLOAD_DIR)
-
-        return {
-            "message": "Archivo zip cargado correctamente",
-            "extracted_files": files,
-        }
-
-
-        # # Obtener lista de audios
-        # audio_files = zip_service.get_audio_files()
-
-
-        # # Cargar el archivo zip y asociarlo al modelo
-        # tts_service.upload_zip_model(model, file)
-
-        return {"message": "Archivo zip cargado correctamente"}
-    except ValueError as ve:
-        raise HTTPException(status_code=422, detail=str(ve))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))

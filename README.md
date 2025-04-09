@@ -2,7 +2,6 @@
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/cristianmaringma/tts-service?style=flat-square)
 ![Docker Image Size](https://img.shields.io/docker/image-size/cristianmaringma/tts-service)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/ccmarin14/tts-service)
 
 ## Descripción
 
@@ -105,7 +104,7 @@ docker-compose up -d
 
 1. Clona el repositorio:
 ```bash
-git clone https://github.com/ccmarin14/TTS-Service.git
+git clone https://gl.master2000.net/cristianmarin/TTS-Service
 ```
 
 2. Crea y configura tu archivo .env:
@@ -134,7 +133,8 @@ docker-compose up -d
 │   │   ├── polly.py              # Proveedor Amazon Polly
 │   │   └── voicemaker.py         # Proveedor Voicemaker
 │   ├── resources/                # Recursos
-│   │   └── audios                # Carpeta temporal de audios
+│   │   ├── audios                # Carpeta temporal de audios
+│   │   └── uploads               # Carpeta temporal para audios cargados
 │   ├── services/
 │   │   ├── container_service.py  # Contenedor de servicios
 │   │   ├── database/
@@ -144,7 +144,8 @@ docker-compose up -d
 │   │   │   └── s3_service.py     # Integración con AWS S3
 │   │   ├── tts/
 │   │   │   └── tts_service.py    # Servicio principal TTS
-│   │   └── container_service.py  # Servicio para agrupar los servicios
+│   │   ├── container_service.py  # Servicio para agrupar los servicios
+│   │   └── zip_service.py        # Servicio para descomprimir archivo zip y preparar audios.
 │   ├── utils/
 │   │   └── yaml_loader.py        # Utilidad para YAML
 │   ├── validators/
@@ -156,15 +157,15 @@ docker-compose up -d
 ```
 
 ## Uso de la API
-### Convertir Texto a Voz
-
-## Uso de la API
-
 ### 1. Convertir Texto a Voz por Nombre
 ```bash
 POST /tts/by-name/
 ```
-#### Payload:
+
+#### Descripción
+Genera un archivo de audio utilizando el nombre específico de un modelo de voz.
+
+#### Parámetros del Request
 ```json
 {
   "text": "Texto original a convertir",
@@ -174,11 +175,50 @@ POST /tts/by-name/
 }
 ```
 
+#### Respuesta Exitosa
+```json
+{
+  "message": "Audio sintetizado correctamente",
+  "audio_path": "https://bucket.s3.amazonaws.com/audios/hash.mp3"
+}
+```
+
+#### Errores Comunes
+```json
+{
+  "detail": "Información no encontrada para el lenguage:'es-ES' y para el nombre del modelo:'Carmen'"
+}
+```
+
+#### Ejemplo de Uso con cURL
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/tts/by-name/' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "text": "Texto original a convertir",
+    "read": "Texto que se leerá",
+    "language": "es-ES",
+    "model": "Carmen"
+}'
+```
+
+#### Notas
+- El campo `read` es opcional, si no se proporciona se usará el valor de `text`
+- El modelo debe existir para el idioma especificado
+- El texto se limpiará automáticamente de espacios extra
+
 ### 2. Convertir Texto a Voz por ID
 ```bash
 POST /tts/{model_id}
 ```
-#### Payload:
+#### Descripción
+Genera un archivo de audio utilizando el ID de un modelo de voz.
+
+#### Parámetros de Ruta
+- `model_id` (integer, required): ID del modelo de voz a utilizar
+
+#### Parámetros del Request
 ```json
 {
   "text": "Texto original a convertir",
@@ -186,11 +226,45 @@ POST /tts/{model_id}
 }
 ```
 
+#### Respuesta Exitosa
+```json
+{
+  "message": "Audio sintetizado correctamente",
+  "audio_path": "https://bucket.s3.amazonaws.com/audios/hash.mp3"
+}
+```
+
+#### Errores Comunes
+```json
+{
+  "detail": "Modelo con el id:123 no encontrado"
+}
+```
+
+#### Ejemplo de Uso con cURL
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/tts/1' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "text": "Texto original a convertir",
+    "read": "Texto que se leerá"
+}'
+```
+
+#### Notas
+- El ID del modelo debe existir en la base de datos
+- Se añadirá un punto final al texto si no lo tiene
+- El audio generado se cachea para futuras solicitudes
+
 ### 3. Convertir Texto con Parámetros Opcionales
 ```bash
 POST /tts/optional/
 ```
-#### Payload:
+#### Descripción
+Genera un archivo de audio especificando características opcionales del modelo de voz.
+
+#### Parámetros del Request
 ```json
 {
   "text": "Texto original a convertir",
@@ -201,11 +275,110 @@ POST /tts/optional/
 }
 ```
 
-### 4. Crear Nuevo Modelo de Voz
+#### Respuesta Exitosa
+```json
+{
+  "message": "Audio sintetizado correctamente",
+  "audio_path": "https://bucket.s3.amazonaws.com/audios/hash.mp3"
+}
+```
+
+#### Errores Comunes
+```json
+{
+  "detail": "Información no encontrada para el lenguage:'es-ES' para el genero:'F' y del tipo:'adult'"
+}
+```
+
+#### Ejemplo de Uso con cURL
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/tts/optional/' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "text": "Texto original a convertir",
+    "read": "Texto que se leerá",
+    "language": "es-ES",
+    "gender": "F",
+    "type": "adult"
+}'
+```
+
+#### Notas
+- Se seleccionará el primer modelo que coincida con los parámetros
+- Los valores permitidos para `type` son: "adult", "child", "robot"
+- Los valores permitidos para `gender` son: "M", "F"
+
+### 4. Cargar Audios para un Modelo de Voz
+```bash
+POST /tts/upload-zip/{model_id}
+```
+
+#### Descripción
+Permite cargar un archivo ZIP que contiene archivos de audio MP3 y los asocia a un modelo de voz específico. Los archivos serán renombrados y almacenados automáticamente.
+
+#### Parámetros de Ruta
+- `model_id` (integer, required): ID del modelo de voz al que se asociarán los audios
+
+#### Parámetros del Request
+- `file` (file, required): Archivo ZIP que contiene los audios MP3
+  - Content-Type: multipart/form-data
+  - Formato: ZIP
+  - Extensiones permitidas dentro del ZIP: .mp3
+
+#### Respuesta Exitosa
+```json
+{
+  "message": "Archivo zip cargado correctamente",
+  "extracted_files": {
+    "original_name.mp3": "hash_generado.mp3",
+    "otro_audio.mp3": "otro_hash_generado.mp3"
+  }
+}
+```
+
+#### Errores Comunes
+```json
+{
+  "detail": "Modelo con el id:123 no encontrado"
+}
+```
+
+```json
+{
+  "detail": "El archivo ZIP está vacío"
+}
+```
+
+```json
+{
+  "detail": "Extensión no permitida: .wav"
+}
+```
+
+#### Ejemplo de Uso con cURL
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/tts/upload-zip/1' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: multipart/form-data' \
+  -F 'file=@audios.zip'
+```
+
+#### Notas
+- El archivo ZIP debe contener solo archivos MP3
+- Los archivos serán renombrados usando un hash único basado en su contenido
+- Los archivos duplicados (mismo contenido) serán ignorados
+- El tamaño máximo del archivo ZIP depende de la configuración del servidor
+
+### 5. Crear Nuevo Modelo de Voz
 ```bash
 POST /models/
 ```
-#### Payload:
+#### Descripción
+Crea un nuevo modelo de voz en el sistema.
+
+#### Parámetros del Request
 ```json
 {
   "voice_name": "Nueva Voz",
@@ -217,68 +390,106 @@ POST /models/
 }
 ```
 
-### 5. Obtener Modelos Disponibles
-```bash
-GET /models/
-```
-#### Respuesta:
+#### Respuesta Exitosa
 ```json
 {
-  "playht": {
-    "es-ES": {
-      "adult": {
-        "F": [
-          {
-            "id": 1,
-            "voice_name": "Carmen",
-            "model": "s3://voice-cloning-zero-shot/d9ff78ba-d016"
-          }
-        ]
-      }
-    }
-  },
-  "polly": {
-    "es-ES": {
-      "adult": {
-        "F": [
-          {
-            "id": 2,
-            "voice_name": "Lucia",
-            "model": "Lucia"
-          }
-        ]
-      }
-    }
+  "message": "Modelo creado correctamente",
+  "model": {
+    "id": 3,
+    "voice_name": "Nueva Voz",
+    "language": "es-ES",
+    "gender": "F",
+    "type": "adult",
+    "platform": "polly",
+    "model": "Lucia"
   }
 }
 ```
 
-### Respuesta Exitosa (para endpoints TTS):
+#### Errores Comunes
 ```json
 {
-  "message": "Audio sintentizado correctamente",
-  "audio_path": "https://tu-bucket.s3.amazonaws.com/audios/hash.mp3"
+  "detail": "Ya existe un modelo con el nombre: Nueva Voz"
 }
 ```
 
-### Errores Comunes:
+#### Ejemplo de Uso con cURL
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/models/' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "voice_name": "Nueva Voz",
+    "language": "es-ES",
+    "gender": "F",
+    "type": "adult",
+    "platform": "polly",
+    "model": "Lucia"
+}'
+```
+
+#### Notas
+- El nombre de la voz debe ser único
+- La plataforma debe ser una de las soportadas: "polly", "playht", "voicemaker"
+- Los modelos creados están disponibles inmediatamente
+
+### 6. Obtener Modelos Disponibles
+```bash
+GET /models/
+```
+#### Descripción
+Retorna la lista de todos los modelos de voz disponibles en el sistema.
+
+#### Respuesta Exitosa
+```json
+[
+  {
+    "id": 1,
+    "voice_name": "Carmen",
+    "language": "es-ES",
+    "gender": "F",
+    "type": "adult",
+    "platform": "playht",
+    "model": "s3://voice-cloning-zero-shot/d9ff78ba-d016"
+  },
+  {
+    "id": 2,
+    "voice_name": "Lucia",
+    "language": "es-ES",
+    "gender": "F",
+    "type": "adult",
+    "platform": "polly",
+    "model": "Lucia"
+  }
+]
+```
+
+#### Errores Comunes
 ```json
 {
-  "detail": "Información no encontrada para el lenguage:'es-ES' y para el nombre del modelo:'ModeloX'"
+  "detail": "Error al cargar los modelos"
 }
 ```
 
-```json
-{
-  "detail": "El campo texto no puede estar vacío"
-}
+#### Ejemplo de Uso con cURL
+```bash
+curl -X 'GET' \
+  'http://localhost:8000/models/' \
+  -H 'accept: application/json'
 ```
 
-```json
-{
-  "detail": "Ya existe un modelo con el nombre: NuevaVoz"
-}
-```
+#### Notas
+- Los modelos se devuelven ordenados por ID
+- Incluye todos los modelos activos en el sistema
+- La respuesta está organizada por plataforma y características
+
+## Notas Generales
+- Todos los endpoints requieren autenticación mediante token
+- Los audios generados se almacenan en S3 y se cachean
+- El límite de tamaño para archivos ZIP es de 100MB
+- Las respuestas de error siguen el formato estándar de FastAPI
+- Los tiempos de respuesta dependen del proveedor TTS seleccionado
+- Se recomienda usar HTTPS en producción
 
 ## Flujo de la aplicación
 ```mermaid
@@ -301,6 +512,21 @@ graph TD
     O -->|URL del audio| P[Cliente]
     E -->P
 
+    %% Flujo para cargar ZIP
+    AA[Cliente] -->|POST ZIP| BB[TTSController]
+    BB -->|Valida modelo| CC[DBService]
+    CC -->|Si existe| DD[ZipService]
+    DD -->|Valida ZIP| EE{Es válido?}
+    EE -->|No| FF[Error formato]
+    EE -->|Sí| GG[Extrae y renombra]
+    GG -->|Archivos procesados| HH[TTSService]
+    HH -->|Por cada archivo| II[FileService]
+    II -->|Sube a S3| JJ[S3Service]
+    JJ -->|URLs| KK[DBService]
+    KK -->|Guarda metadata| LL[MySQL]
+    LL -->|Lista de archivos| MM[Cliente]
+    FF -->MM
+
     %% Flujo para obtener modelos
     Q[Cliente] -->|GET /models| R[TTSController]
     R -->|Obtiene modelos| S[DBService]
@@ -318,7 +544,8 @@ graph TD
 ## Versiones Disponibles
 - `latest`: Última versión estable
 - `1.0.0`: Primera versión estable
-- `2.0.0`: Segunda versión estable que permite trabajar con multiples TTS en línea
+- `2.0.3`: Segunda versión estable que permite trabajar con multiples TTS en línea
+- `2.1.0`: Segunda versión estable, con la posibilidad de cargar audios relacionados a un modelo.
 
 ## Mantenimiento
 ### Actualización de la Imagen

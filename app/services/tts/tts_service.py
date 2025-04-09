@@ -179,6 +179,7 @@ class TTSService(YamlLoaderMixin):
     def _upload_and_save(self, request: TextToSpeechRequestById, model: InformationModel, file_path: str, audio_hash: str) -> str:
         """
         Guarda un archivo de audio y lo registra en la base de datos.
+        
         Args:
             request (TextToSpeechRequestById): Objeto de solicitud que contiene el texto a procesar.
             model (InformationModel): Modelo de información con los detalles de la voz a utilizar.
