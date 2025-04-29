@@ -1,5 +1,5 @@
 import os
-from typing import Dict, List
+from typing import Dict
 import requests
 from app.models.information_model import InformationModel
 from app.models.tts_model import TextToSpeechRequestById
@@ -7,25 +7,21 @@ from app.providers.playht_provider import PlayHTProvider
 from app.providers.polly_provider import PollyProvider
 from app.providers.voicemaker_provider import VoicemakerProvider
 from app.services.container_service import ServiceContainer
-from app.services.storage.file_service import FileService
 from app.utils.yaml_loader import YamlLoaderMixin
 
 class TTSService(YamlLoaderMixin):
     """
     Clase para gestionar la conversión de texto a audio usando la API Play.ht.
 
-    Atributos:
-        voices (dict): Configuración de voces cargada desde un archivo YAML.
-        api (dict): Configuración de la API cargada desde un archivo YAML.
-        file_service (FileService): Servicio para gestionar los archivos de audio.
-        db_service (DBService): Una instancia para gestionar la base de datos.
+    Args:
+        YamlLoaderMixin: Clase base para cargar configuraciones desde archivos YAML.
     """
 
     def __init__(self, services: ServiceContainer, voices: dict):
         """
         Inicializa la instancia de TTSService.
         Args:
-            file_service (FileService): Una instancia para gestionar los archivos generados.
+            services (ServiceContainer): Contenedor de servicios que incluye la base de datos y el servicio de archivos.
         """
         self.voices = voices
         self.services = services
@@ -56,8 +52,8 @@ class TTSService(YamlLoaderMixin):
         audio_hash = self.services.file_service.generate_hash(read_text + model.model)
 
         # Verificar si el audio ya existe en la base de datos
-        if self._audio_exists(audio_hash):
-            existing_audio = self.services.db_service.get_audio_by_hash(audio_hash)
+        existing_audio = self.services.db_service.get_audio_by_hash(audio_hash)
+        if existing_audio and 'file_url' in existing_audio:
             return existing_audio['file_url']
         
         # Generar el audio con la voz seleccionada

@@ -547,6 +547,7 @@ graph TD
 - `1.0.0`: Primera versión estable
 - `2.0.3`: Segunda versión estable que permite trabajar con multiples TTS en línea
 - `2.1.0`: Segunda versión estable, con la posibilidad de cargar audios relacionados a un modelo.
+- `2.2.0`: Se añade optimización de solicitudes a base de datos y se cachea la información brindar respuestas más eficientes.
 
 ## Mantenimiento
 ### Actualización de la Imagen
