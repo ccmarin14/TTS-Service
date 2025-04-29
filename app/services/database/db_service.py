@@ -1,9 +1,10 @@
 import json
 import mysql.connector
-from typing import List
 from app.models.information_model import CreateVoiceModel, InformationModel
 from app.models.tts_model import TextToSpeechRequestById
 from app.utils.yaml_loader import YamlLoaderMixin
+from datetime import datetime
+from typing import Dict, List, Optional, Set
 
 class DBService(YamlLoaderMixin):
     """
@@ -13,6 +14,8 @@ class DBService(YamlLoaderMixin):
     def __init__(self, db_config: dict):
         """
         Inicializa la conexión a la base de datos usando la configuración del archivo YAML.
+        Args:
+            db_config (dict): Configuración de la base de datos.
         """
         self.connection = mysql.connector.connect(
             host=db_config['host'],
@@ -20,6 +23,32 @@ class DBService(YamlLoaderMixin):
             password=db_config['password'],
             database=db_config['database'],
         )
+        # Caché ligero solo para verificación de existencia
+        self._hash_set: Set[str] = set()
+        # Caché de URLs para acceso rápido
+        self._url_cache: Dict[str, str] = {}  # {hash: file_url}
+        self._initialize_cache()
+
+    def _initialize_cache(self) -> None:
+        """Carga solo los hashes y URLs en memoria"""
+        cursor = self.connection.cursor(dictionary=True)
+        sql = "SELECT audio_hash, file_url FROM generated_audios"
+        
+        try:
+            cursor.execute(sql)
+            results = cursor.fetchall()
+
+            # Poblar ambos cachés
+            self._hash_set = {row['audio_hash'] for row in results}
+            self._url_cache = {row['audio_hash']: row['file_url'] for row in results}
+
+            print(f"Cache inicializado con {len(self._hash_set)} registros")
+        except mysql.connector.Error as err:
+            print(f"Error inicializando cache: {err}")
+            self._hash_set = set()
+            self._url_cache = {}
+        finally:
+            cursor.close()
 
     def save_voice_model(self, voice_model:CreateVoiceModel) -> CreateVoiceModel:
         """
@@ -59,30 +88,34 @@ class DBService(YamlLoaderMixin):
         finally:
             cursor.close()
     
-    def save_generated_audio(self, request:TextToSpeechRequestById, model:InformationModel, file_url:str, audio_hash:str) -> bool:
+    def save_generated_audio(self, request:TextToSpeechRequestById, 
+                             model:InformationModel, 
+                             file_url:str, 
+                             audio_hash:str) -> bool:
         """
         Guarda un registro de audio generado en la base de datos.
         Args:
-            text (str): Texto utilizado para generar el audio
-            language (str): Idioma del audio
-            gender (str): Género de la voz
-            model (str): Modelo de voz utilizado
-            file_url (str): URL del archivo de audio
-            audio_hash (str): Hash único del audio
+            request (TextToSpeechRequestById): Objeto de solicitud que contiene el texto a procesar.
+            model (InformationModel): Modelo de información con los detalles de la voz a utilizar.
+            file_url (str): URL del archivo de audio generado.
+            audio_hash (str): Hash único del audio.
         Returns:
             bool: True si se guardó correctamente, False en caso contrario
         """
-        text = request.text
-        read_text = request.read
         cursor = self.connection.cursor()
         sql = """INSERT INTO generated_audios 
                  (original_text, input_text, information_id, file_url, audio_hash) 
                  VALUES (%s, %s, %s, %s, %s)"""
-        values = (text, read_text, model.id, file_url, audio_hash)
+        values = (request.text, request.read, model.id, file_url, audio_hash)
         
         try:
             cursor.execute(sql, values)
             self.connection.commit()
+
+            # Actualizar ambos cachés
+            self._hash_set.add(audio_hash)
+            self._url_cache[audio_hash] = file_url
+            
             return True
         except mysql.connector.Error as err:
             print(f"Error al guardar en la base de datos: {err}")
@@ -90,25 +123,40 @@ class DBService(YamlLoaderMixin):
         finally:
             cursor.close()
 
-    def get_audio_by_hash(self, audio_hash: str) -> dict:
+    def get_audio_by_hash(self, audio_hash: str) -> Optional[dict]:
         """
-        Busca un registro de audio por su hash en la base de datos.
+        Busca un registro de audio por su hash, primero en caché y luego en BD si no existe.
         Args:
             audio_hash (str): Hash único del audio a buscar
         Returns:
-            dict: Diccionario con los datos del audio si existe, None si no se encuentra
+            Optional[dict]: Diccionario con los datos del audio si existe, None si no se encuentra
         """
+        # Verificar si existe el hash
+        if audio_hash not in self._hash_set:
+            return None
+
+        # Si solo necesitamos la URL, la retornamos del caché
+        cached_url = self._url_cache.get(audio_hash)
+        if cached_url:
+            return {'file_url': cached_url, 'audio_hash': audio_hash}
+
+        # Solo si se necesitan más detalles, consultamos la BD
+        return self._fetch_full_details(audio_hash)
+    
+    def _fetch_full_details(self, audio_hash: str) -> Optional[dict]:
+        """Obtiene todos los detalles de un audio de la BD"""
         cursor = self.connection.cursor(dictionary=True)
-        sql = """SELECT * FROM generated_audios 
-                WHERE audio_hash = %s 
-                LIMIT 1"""
+        sql = "SELECT * FROM generated_audios WHERE audio_hash = %s LIMIT 1"
         
         try:
             cursor.execute(sql, (audio_hash,))
             result = cursor.fetchone()
+            if result:
+                # Actualizar caché de URL si no existe
+                self._url_cache[audio_hash] = result['file_url']
             return result
         except mysql.connector.Error as err:
-            print(f"Error al buscar en la base de datos: {err}")
+            print(f"Error en BD: {err}")
             return None
         finally:
             cursor.close()
@@ -144,6 +192,13 @@ class DBService(YamlLoaderMixin):
             return None
         finally:
             cursor.close()
+    
+    def refresh_cache(self) -> None:
+        """
+        Actualiza completamente el caché desde la base de datos.
+        Útil cuando se sospecha que el caché puede estar desactualizado.
+        """
+        self._initialize_cache()
 
     def __del__(self):
         """

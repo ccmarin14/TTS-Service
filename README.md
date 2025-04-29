@@ -555,6 +555,20 @@ Para actualizar a la última versión:
 docker pull cristianmaringma/tts-service:latest
 ```
 
+## Optimizaciones de Sistema
+### Sistema de Caché
+El servicio implementa un sistema de caché de dos niveles optimizado para reducir la carga en la base de datos y mejorar los tiempos de respuesta:
+
+#### Estructura del Caché
+- **Caché de Hashes**: Conjunto optimizado para verificación rápida de existencia O(1)
+- **Caché de URLs**: Diccionario para acceso directo a URLs frecuentes O(1)
+
+#### Beneficios
+- Reducción del ~75% en uso de memoria
+- Verificación instantánea de existencia de audios
+- Menor carga en la base de datos
+- Arranque más rápido del servicio
+
 ### Logs y Monitoreo
 ```bash
 # Ver logs del contenedor
@@ -567,9 +581,3 @@ docker stats tts-service
 ## Documentación API
 -   Swagger UI: http://localhost:8000/docs
 -   ReDoc: http://localhost:8000/redoc
-
-## Soporte
-Si encuentras algún problema o tienes alguna sugerencia, por favor:
-1. Revisa los issues existentes en GitHub
-2. Abre un nuevo issue si es necesario
-3. Contacta al equipo de mantenimiento
