@@ -49,7 +49,8 @@ class TTSService(YamlLoaderMixin):
             ValueError: Si ocurre un error durante la generación del audio.
         """
         read_text = request.read
-        audio_hash = self.services.file_service.generate_hash(read_text + model.model)
+        audio_name = read_text + model.language[:2] + str(model.id) + model.voice_name + model.gender
+        audio_hash = self.services.file_service.generate_hash(audio_name)
 
         # Verificar si el audio ya existe en la base de datos
         existing_audio = self.services.db_service.get_audio_by_hash(audio_hash)
