@@ -50,7 +50,7 @@ class TTSService(YamlLoaderMixin):
         """
         read_text = request.read
         audio_name = read_text + model.language[:2] + str(model.id) + model.voice_name + model.gender
-        audio_hash = self.services.file_service.generate_hash(audio_name)
+        audio_hash = self.services.file_service.generate_hash(audio_name.lower())
 
         # Verificar si el audio ya existe en la base de datos
         existing_audio = self.services.db_service.get_audio_by_hash(audio_hash)
@@ -58,7 +58,7 @@ class TTSService(YamlLoaderMixin):
             return existing_audio['file_url']
         
         # Generar el audio con la voz seleccionada
-        audio_file_url = self.synthesize_audio(request, model, read_text, audio_hash)
+        audio_file_url = self.synthesize_audio(request, model, read_text.lower(), audio_hash)
         return audio_file_url
                 
     def synthesize_audio(self, request: TextToSpeechRequestById, model: InformationModel, read_text: str, audio_hash: str) -> str:

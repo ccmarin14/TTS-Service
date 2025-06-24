@@ -106,7 +106,7 @@ class DBService(YamlLoaderMixin):
         sql = """INSERT INTO generated_audios 
                  (original_text, input_text, information_id, file_url, audio_hash) 
                  VALUES (%s, %s, %s, %s, %s)"""
-        values = (request.text, request.read, model.id, file_url, audio_hash)
+        values = (request.text.lower(), request.read.lower(), model.id, file_url, audio_hash)
         
         try:
             cursor.execute(sql, values)
