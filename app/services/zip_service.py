@@ -97,8 +97,8 @@ class ZipService:
         renamed_files = {}
         for original_name in file_list:
             filename, ext = os.path.splitext(original_name)
-            audio_name = filename + model.model
-            new_name = f"{FileService.generate_hash(audio_name)}{ext}";
+            audio_name = filename + model.language[:2] + str(model.id) + model.voice_name + model.gender
+            new_name = f"{FileService.generate_hash(audio_name.lower())}{ext}";
             renamed_files[original_name] = new_name
             
         return renamed_files
